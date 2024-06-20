@@ -5,7 +5,10 @@ import { HasMimeType, IsFile, MemoryStoredFile } from 'nestjs-form-data';
 
 export class SignUpUserDto {
   @IsString()
-  userName: string;
+  firstName: string;
+
+  @IsString()
+  lastName: string;
 
   @IsString()
   @IsOptional()
@@ -18,7 +21,6 @@ export class SignUpUserDto {
   @IsString()
   @IsOptional()
   address?: string;
-
 
   @IsBoolean()
   @Transform(({ value }) => value === 'true')

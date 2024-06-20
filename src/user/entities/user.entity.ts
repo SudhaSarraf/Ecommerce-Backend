@@ -1,10 +1,14 @@
 import { AbstractEntity } from "src/common/abstract.entity";
 import { RoleEntity } from "src/role/entities/role.entity";
-import { Column, CreateDateColumn, DeleteDateColumn, JoinTable, ManyToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
+@Entity('users')
 export class UserEntity extends AbstractEntity<UserEntity>{
     @Column()
-    userName: string;
+    firstName: string;
+
+    @Column()
+    lastName: string;
 
     @PrimaryColumn()
     userId: string;

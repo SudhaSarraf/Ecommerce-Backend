@@ -25,7 +25,8 @@ export class UserService {
       select: {
         active: true,
         userId:true,
-        userName: true,
+        firstName: true,
+        lastName:true,
         email: true,
         phone: true,
         address: true,
@@ -53,7 +54,8 @@ export class UserService {
       select: {
         active: true,
         userId:true,
-        userName: true,
+        firstName: true,
+        lastName:true,
         email: true,
         phone: true,
         address: true,
@@ -78,6 +80,22 @@ export class UserService {
     else if(userData.image){
       imageName = await this.filesService.processFile(userData.image);
     }
+
+    const updateDto = { ...userData, roles: foundUser.roles };
+    const updateEntity = new UserEntity({ ...updateDto, image: imageName });
+    let data: UpdateResult;
+    if (updateEntity) {
+      data = await this.entityManager.update(UserEntity, id, {
+        firstName: updateEntity.firstName,
+        lastName: updateEntity.lastName,
+        image: updateEntity.image || foundUser.image,
+        email: updateEntity.email,
+        phone: updateEntity.phone,
+      });
+    } else throw new InternalServerErrorException('Error while updating user.');
+
+    if (data.affected > 0) return this.findOne(id);
+    else throw new InternalServerErrorException('Error while updating user.');
   }
 
   async updatePassword(id: string, userData: UpdatePasswordDto) {
