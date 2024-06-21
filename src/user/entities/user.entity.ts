@@ -1,6 +1,9 @@
+import { CartEntity } from "src/cart/entities/cart.entity";
 import { AbstractEntity } from "src/common/abstract.entity";
+import { OrderEntity } from "src/order/entities/order.entity";
+import { ProductEntity } from "src/product/entities/product.entity";
 import { RoleEntity } from "src/role/entities/role.entity";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('users')
 export class UserEntity extends AbstractEntity<UserEntity>{
@@ -71,4 +74,10 @@ export class UserEntity extends AbstractEntity<UserEntity>{
     @ManyToMany(() => RoleEntity, (role) => role.users, { eager: true })
     @JoinTable()
     roles: RoleEntity[];
+
+    @OneToMany(() => OrderEntity, (order) => order.user)
+    orders: OrderEntity[];
+  
+    @OneToOne(() => CartEntity, (cart) => cart.user, { cascade: true })
+    cart: CartEntity;
 }

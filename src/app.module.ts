@@ -19,6 +19,9 @@ import { LoggerModule } from './logger.service.ts/logger.module';
 import { UsersMiddleware } from './user/users.middleware';
 import { CartModule } from './cart/cart.module';
 import { ProductModule } from './product/product.module';
+import { OrderModule } from './order/order.module';
+import { OrderItemModule } from './order-item/order-item.module';
+import { CartItemModule } from './cart-item/cart-item.module';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -46,7 +49,7 @@ import { ProductModule } from './product/product.module';
     }),
     inject: [ConfigService], // Explicitly inject ConfigService
   }),
-    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule],
+    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AtGuard }],
 
