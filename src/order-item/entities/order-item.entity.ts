@@ -1,9 +1,8 @@
-import { OrderEntity } from 'src/order/entities/order.entity';
-import { ProductEntity } from 'src/product/entities/product.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { OrderEntity } from 'src/order/entities/order.entity'; // Check the path to OrderEntity
+import { ProductEntity } from 'src/product/entities/product.entity'; // Check the path to ProductEntity
 
-
-@Entity({ name: 'order_item' })
+@Entity({ name: 'orderItems' })
 export class OrderItemEntity {
   @PrimaryGeneratedColumn('uuid')
   orderItemId: string;
@@ -11,7 +10,7 @@ export class OrderItemEntity {
   @ManyToOne(() => OrderEntity, (order) => order.orderItems)
   order: OrderEntity;
 
-  @ManyToOne(() => ProductEntity, { eager: true })
+  @ManyToOne(() => ProductEntity, { eager: true }) // Ensure ProductEntity is correctly imported
   product: ProductEntity;
 
   @Column('int')

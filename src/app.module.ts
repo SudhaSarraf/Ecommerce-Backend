@@ -22,6 +22,7 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { CartItemModule } from './cart-item/cart-item.module';
+import { PreOrderModule } from './pre-order/pre-order.module';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -49,7 +50,7 @@ import { CartItemModule } from './cart-item/cart-item.module';
     }),
     inject: [ConfigService], // Explicitly inject ConfigService
   }),
-    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule],
+    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, PreOrderModule],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AtGuard }],
 

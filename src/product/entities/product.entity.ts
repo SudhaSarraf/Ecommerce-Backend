@@ -1,3 +1,5 @@
+import { AbstractEntity } from 'src/common/abstract.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import {
     Entity,
     Column,
@@ -8,6 +10,7 @@ import {
     ManyToMany,
     JoinTable,
     ManyToOne,
+    JoinColumn,
   } from 'typeorm';// Import the Category enum
   
   export enum Category {
@@ -28,7 +31,7 @@ import {
 
   
   @Entity({ name: 'product' })
-  export class ProductEntity {
+  export class ProductEntity extends AbstractEntity<ProductEntity>{
     @PrimaryGeneratedColumn('uuid')
     productId: string;
   
@@ -42,7 +45,7 @@ import {
     price: number;
   
     @Column()
-    imageUrl: string;
+    images: string;
   
     @Column({ default: true })
     inStock: boolean;
@@ -83,5 +86,20 @@ import {
     @Column('date', { nullable: true })
     harvestDate: Date;
 
+    @Column()
+    creatorId: string;
+
+    @Column({ length: 50, default: "unknown" })
+    createdBy: string;
+
+    @Column({ length: 50, default: null, nullable: true })
+    updatedBy: string;
+
+    @ManyToOne(() => UserEntity, (user) => user.product, { nullable: false, eager: true, cascade: ['insert', 'update'] })
+    @JoinColumn({
+        referencedColumnName: 'userId',
+        name: 'creatorId',
+    })
+    user: UserEntity;
   }
   
