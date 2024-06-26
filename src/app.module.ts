@@ -23,6 +23,14 @@ import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { CartItemModule } from './cart-item/cart-item.module';
 import { PreOrderModule } from './pre-order/pre-order.module';
+import { RoleEntity } from './role/entities/role.entity';
+import { UserEntity } from './user/entities/user.entity';
+import { ProductEntity } from './product/entities/product.entity';
+import { OrderEntity } from './order/entities/order.entity';
+import { OrderItemEntity } from './order-item/entities/order-item.entity';
+import { CartEntity } from './cart/entities/cart.entity';
+import { CartItemEntity } from './cart-item/entities/cart-item.entity';
+import { PreOrderEntity } from './pre-order/entities/pre-order.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -46,13 +54,24 @@ import { PreOrderModule } from './pre-order/pre-order.module';
     imports: [ConfigModule],
     useFactory: (configService: ConfigService) => ({
       ...dataSourceOtps,
-      autoLoadEntities: true,
+      // autoLoadEntities: true,
+      entities: [
+        ProductEntity,
+        OrderEntity,
+        OrderItemEntity,
+        CartEntity,
+        CartItemEntity,
+        PreOrderEntity,
+        RoleEntity,
+        UserEntity,
+        ,
+      ],
     }),
     inject: [ConfigService], // Explicitly inject ConfigService
   }),
     PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, PreOrderModule],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: AtGuard }],
+  providers: [AppService, /*{ provide: APP_GUARD, useClass: AtGuard }*/],
 
 })
 

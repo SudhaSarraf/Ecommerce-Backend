@@ -15,9 +15,7 @@ import { OrderEntity } from 'src/order/entities/order.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([OrderItemEntity, OrderEntity]),
-    NestjsFormDataModule,
     FilesModule,
-    UsersModule,
   ],
   controllers: [OrderItemController],
   providers: [OrderItemService, OrderService, ProductService, UserService, FilesService],

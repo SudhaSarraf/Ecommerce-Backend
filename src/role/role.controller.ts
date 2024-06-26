@@ -16,24 +16,24 @@ import { Public } from 'src/common/public.decorator';
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
-  // @Public()
-  @Post()
+  @Public()
+  @Post('/create')
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
   }
 
-  // @Public()
-  @Get()
+  @Public()
+  @Get('getAll')
   findAll() {
     return this.roleService.findAll();
   }
-  // @Public()
-  @Get(':name')
+  @Public()
+  @Get('getByName:name')
   findOne(@Param('name') name: string) {
     return this.roleService.findOne(name);
   }
 
-  @Patch(':name')
+  @Patch('update/:name')
   update(@Param('name') name: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.roleService.update(name, updateRoleDto);
   }

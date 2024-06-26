@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, OneToMany, CreateDat
 import { UserEntity } from 'src/user/entities/user.entity'; // Adjust the import path as needed
 import { OrderItemEntity } from 'src/order-item/entities/order-item.entity'; // Adjust the import path as needed
 
-@Entity({ name: 'order' })
+@Entity({ name: 'order', schema:'public' })
 export class OrderEntity {
   @PrimaryGeneratedColumn('uuid')
   orderId: string;
@@ -10,10 +10,10 @@ export class OrderEntity {
   @ManyToOne(() => UserEntity, (user) => user.orders, { eager: true })
   user: UserEntity;
 
-  @Column('decimal')
+  @Column({type:'decimal',  precision: 10, scale: 4, nullable: false })
   totalAmount: number;
 
-  @Column('decimal')
+  @Column({type:'decimal',  precision: 10, scale: 4, nullable: false })
   totalProducts: number;
 
   @CreateDateColumn()
@@ -22,6 +22,6 @@ export class OrderEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order, { eager: true })
+  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order)
   orderItems: OrderItemEntity[];
 }

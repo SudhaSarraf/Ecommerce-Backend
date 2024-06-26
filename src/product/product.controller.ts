@@ -1,3 +1,4 @@
+import { Roles } from './../guards/role.decorator';
 import {
   Controller,
   Get,
@@ -6,26 +7,32 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,UploadedFiles, Req, UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { Category } from './entities/product.entity';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { RoleGuard } from 'src/guards/role.guard';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  // @UseGuards(RoleGuard)
+  // @Roles('admin', 'author')
+  @Post('create')
+  @UseInterceptors(FilesInterceptor('images'))
+  create(@Body() createProductDto: CreateProductDto, /*@Req() req: any,*/ @UploadedFiles() images: any) {
+    return this.productService.create({...createProductDto, files: images, /*userId: req.user.userId*/ });
   }
 
-  @Get()
+  @Get('getAll')
   findAll() {
     return this.productService.findAll();
   }
 
-  @Get(':id')
+  @Get('getById/:id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(id);
   }
@@ -35,12 +42,19 @@ export class ProductController {
     return await this.productService.findByCategory(category);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(id, updateProductDto);
+  // @UseGuards(RoleGuard)
+  // @Roles('admin', 'author')
+  @UseInterceptors(FilesInterceptor('images'))
+  @Patch('update/:id')
+  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto, @UploadedFiles() images: Array<Express.Multer.File>) {
+    return this.productService.update({
+      ...updateProductDto,
+      productId: id,
+      files: images
+    });
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.productService.remove(id);
   }

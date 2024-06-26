@@ -17,7 +17,7 @@ export class UserService {
     private readonly filesService:FilesService) {}
 
   async create(userData: Partial<UserEntity>) {
-    return await this.entityManager.save(userData);
+    return await this.entityManager.save(UserEntity, userData);
   }
 
   async findAll() {
@@ -33,7 +33,7 @@ export class UserService {
         roles: true,
         image: true
       },
-      relations: ['role'],
+      relations: ['roles'],
     });
     if(users) {
       // if a user were not found, we want to strip password and hashedRt from resulting users array

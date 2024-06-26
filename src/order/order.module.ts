@@ -14,8 +14,6 @@ import { FilesModule } from 'src/files/files.module';
   imports: [
     TypeOrmModule.forFeature([OrderEntity]),
     UsersModule,
-    ProductModule,
-    NestjsFormDataModule,
     FilesModule
   ],
   controllers: [OrderController],

@@ -31,11 +31,13 @@ export class ProductService {
       const product = {...productDto, images: imageNames};
       const productEntity = new ProductEntity(product);
       productEntity.createdBy = `${usr.firstName} ${usr.lastName}`;
+      productEntity.inStock = true;
       productEntity.user = usr;
 
-      const result = await this.entityManager.save({...productEntity})
+      const result = await this.entityManager.save(ProductEntity, {...productEntity})
       if(!result) throw new InternalServerErrorException();
       const {
+        productId,
         name,
         description,
         images,
@@ -48,7 +50,7 @@ export class ProductService {
         harvestDate,
         user: {userId}
       } = result;
-      return {name, description, images: imageNames, price, inStock, stock, category, 
+      return {productId, name, description, images: imageNames, price, inStock, stock, category,
         tags, discountPrice, harvestDate, userId};
     } catch (error) {
       if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
@@ -108,7 +110,7 @@ export class ProductService {
           tags: true,
           discountPrice: true,
           harvestDate: true,
-        },
+        }
       });
       if (!product) {
         throw new NotFoundException('Product not found');
@@ -125,7 +127,6 @@ export class ProductService {
       const results = await this.entityManager.find(ProductEntity, { 
         where: { 
           category: category,
-          inStock: true 
         },
         select :{
           productId: true,
@@ -154,7 +155,7 @@ export class ProductService {
     }
   }
 
-  async update(id: string, productDto: UpdateProductDto) {
+  async update(productDto: UpdateProductDto) {
     // find user which is updating the record
     const user = await this.userService.findOne(productDto.userId);
 
@@ -183,7 +184,7 @@ export class ProductService {
     return { updatedProduct };
   }
 
-  remove(id: string) {
+  async remove(id: string) {
     return this.entityManager.softDelete(ProductEntity, {id: id});
   }
 }

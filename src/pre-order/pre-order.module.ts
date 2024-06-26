@@ -11,7 +11,7 @@ import { FilesModule } from 'src/files/files.module';
 import { FilesService } from 'src/files/files.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PreOrderEntity]), NestjsFormDataModule, UsersModule, FilesModule],
+  imports: [TypeOrmModule.forFeature([PreOrderEntity]), NestjsFormDataModule, FilesModule],
   controllers: [PreOrderController],
   providers: [PreOrderService, ProductService, UserService, FilesService],
 })

@@ -18,10 +18,11 @@ export class CreateProductDto {
   price: number;
 
   files?: Array<Express.Multer.File>;
+  
 
+  @IsOptional()
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
-  @IsOptional()
   inStock: boolean;
 
   @IsNumber()

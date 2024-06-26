@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { OrderEntity } from 'src/order/entities/order.entity'; // Check the path to OrderEntity
 import { ProductEntity } from 'src/product/entities/product.entity'; // Check the path to ProductEntity
 
-@Entity({ name: 'orderItems' })
+@Entity({ name: 'order_items' })
 export class OrderItemEntity {
   @PrimaryGeneratedColumn('uuid')
   orderItemId: string;

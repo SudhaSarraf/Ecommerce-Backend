@@ -100,26 +100,22 @@ export class AuthService {
     // we do this first, because user roles are related, if roles don't exist we can't fetch users,
     // and it will throw internal server error, but we want to throw a meaningful custom error.
     const foundRoles = await this.roleService.findAll();
-    if (!foundRoles)
-      throw new HttpException(
-        `${userData.roles} roles not found in the database`,
-        400,
-      );
+    if (!foundRoles) throw new HttpException(`${userData.roles} roles not found in the database`, 400);
 
-    // match all dto roles from roles in database, dto has role names, but we have role objects,
-    // so we need to perform this test. if the resulting array has undefined, we know that user
+ // Ensure userData.roles is always an array
+    const roles = Array.isArray(userData.roles) ? userData.roles : [userData.roles];
+
+    // Match all dto roles from roles in database, dto has role names, but we have role objects,
+    // so we need to perform this test. If the resulting array has undefined, we know that user
     // has sent a non-existent role name, so we can't process this request.
-    const mapped: RoleEntity[] | undefined = userData.roles.map((name) => {
-      return foundRoles.find((r) => r.name === name);
+    const mapped: RoleEntity[] | undefined = roles.map(name => {
+      return foundRoles.find(r => r.name === name);
     });
 
-    // if mapped has undefined, then we know it was a bad request.
-    if (mapped.includes(undefined))
-      throw new HttpException(
-        'One or more roles not found in the database',
-        400,
-      );
-
+    // Check for undefined values in the mapped array to ensure all roles are valid
+    if (mapped.includes(undefined)) {
+      throw new Error("One or more roles are invalid");
+    }
     // at this point we know user has given valid roles, the role objects are
     // saved in mapped variable.
 

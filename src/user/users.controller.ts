@@ -22,7 +22,7 @@ export class UsersController {
 
   // @UseGuards(AtGuard, RoleGuard)
   // @Roles('author','admin')
-  @Get()
+  @Get('getAll')
   async getAll() {
     return await this.usersService.findAll();
   }
@@ -30,7 +30,7 @@ export class UsersController {
   // @UseGuards(AtGuard)
   // @UseGuards(RoleGuard)
   // @Roles('admin','author')
-  @Patch(':id')
+  @Patch('update/:id')
   @FormDataRequest()
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.usersService.update(id, updateUserDto);
@@ -51,7 +51,7 @@ export class UsersController {
   // @UseGuards(AtGuard)
   // @UseGuards(RoleGuard)
   // @Roles('admin','author')
-  @Get(':id')
+  @Get('getById/:id')
   async findOne(@Param('id') id: string) {
     if (id.trim() === 'undefined' || '') throw new ForbiddenException();
     const user = await this.usersService.findOne(id);
@@ -70,7 +70,7 @@ export class UsersController {
   // @UseGuards(AtGuard)
   // @UseGuards(RoleGuard)
   // @Roles('admin','author')
-  @Get(':email')
+  @Get('getByEmail/:email')
   async getByEmail(@Param('email') email: string) {
     const user = this.usersService.findByEmail(email);
     if (!user) throw new HttpException('User not found', 400);
