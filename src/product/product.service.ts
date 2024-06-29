@@ -46,12 +46,13 @@ export class ProductService {
         stock,
         category,
         tags,
+        discountPercentage,
         discountPrice,
         harvestDate,
         user: {userId}
       } = result;
       return {productId, name, description, images: imageNames, price, inStock, stock, category,
-        tags, discountPrice, harvestDate, userId};
+        tags,discountPercentage, discountPrice, harvestDate, userId};
     } catch (error) {
       if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
         throw new ConflictException('Duplicate entry detected: ' + error.message);

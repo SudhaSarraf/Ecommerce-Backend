@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { UserEntity } from 'src/user/entities/user.entity'; // Adjust the import path as needed
 import { OrderItemEntity } from 'src/order-item/entities/order-item.entity'; // Adjust the import path as needed
+import { BillDetailEntity } from 'src/bill/entities/bill-detail.entity';
 
 @Entity({ name: 'order', schema:'public' })
 export class OrderEntity {
@@ -24,4 +25,7 @@ export class OrderEntity {
 
   @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order)
   orderItems: OrderItemEntity[];
+
+  @OneToMany(() => BillDetailEntity, orderDetail => orderDetail.order)
+    billDetails: BillDetailEntity[];
 }

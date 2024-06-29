@@ -15,10 +15,10 @@ import { CreateOrderDto } from './dto/order.dto';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  // @Post()
-  // create(@Body() createOrderDto: CreateOrderDto) {
-  //   return this.orderService.create(createOrderDto);
-  // }
+  @Post('create')
+  create(@Body() createOrderDto: CreateOrderDto) {
+    return this.orderService.create(createOrderDto);
+  }
 
   // @Get()
   // findAll() {

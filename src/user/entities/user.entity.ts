@@ -1,3 +1,4 @@
+import { BillMasterEntity } from "src/bill/entities/bill-master.entity";
 import { CartEntity } from "src/cart/entities/cart.entity";
 import { AbstractEntity } from "src/common/abstract.entity";
 import { OrderEntity } from "src/order/entities/order.entity";
@@ -87,4 +88,7 @@ export class UserEntity extends AbstractEntity<UserEntity>{
 
     @OneToMany(() => ProductEntity, (product) => product.user)
     product?: ProductEntity[];
+
+    @OneToMany(() =>BillMasterEntity, (billEntity) => billEntity.user)
+    bills: BillMasterEntity[];
 }

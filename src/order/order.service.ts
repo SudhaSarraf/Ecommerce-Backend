@@ -33,6 +33,9 @@ export class OrderService {
         throw new NotFoundException('User not found');
       }
   
+      // Initialize total amount
+      let totalAmount = 0;
+  
       // Process order items
       const orderItems = [];
       for (const item of createOrderDto.orderItems) {
@@ -40,20 +43,26 @@ export class OrderService {
         if (!product) {
           throw new NotFoundException(`Product with id ${item.productId} not found`);
         }
-        
+  
+        // Calculate total price for the item and update total amount
+        const itemTotalPrice = parseFloat((product.price * item.quantity).toFixed(2));
+        totalAmount += itemTotalPrice;
+  
         const orderItem = this.entityManager.create(OrderItemEntity, {
           ...item,
           product,
+          price: itemTotalPrice, // Save price in order item
         });
-        
+  
         orderItems.push(orderItem);
       }
   
-      // Create order entity
+      // Create order entity with total amount
       const order = this.entityManager.create(OrderEntity, {
         ...createOrderDto,
         user,
         orderItems,
+        totalAmount: parseFloat(totalAmount.toFixed(2)), // Ensure totalAmount is formatted correctly
       });
   
       // Save order and order items
@@ -67,6 +76,8 @@ export class OrderService {
       throw error; // Re-throw the error to be caught by the caller
     }
   }
+  
+  
   
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {

@@ -39,7 +39,7 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
     @Column('text')
     description: string;
 
-    @Column('decimal')
+    @Column('decimal', { precision: 10, scale: 2 })
     price: number;
 
     @Column()
@@ -75,7 +75,10 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
     @Column({ nullable: true })
     organicCertification: string;
 
-    @Column('decimal', { nullable: true })
+    @Column('decimal',{ precision: 10, scale: 2 , nullable: true})
+    discountPercentage: number;
+
+    @Column('decimal', { precision: 10, scale: 2 , nullable: true})
     discountPrice: number;
 
     @Column({ nullable: true })

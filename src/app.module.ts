@@ -31,6 +31,9 @@ import { OrderItemEntity } from './order-item/entities/order-item.entity';
 import { CartEntity } from './cart/entities/cart.entity';
 import { CartItemEntity } from './cart-item/entities/cart-item.entity';
 import { PreOrderEntity } from './pre-order/entities/pre-order.entity';
+import { BillModule } from './bill/bill.module';
+import { BillDetailEntity } from './bill/entities/bill-detail.entity';
+import { BillMasterEntity } from './bill/entities/bill-master.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -64,12 +67,14 @@ import { PreOrderEntity } from './pre-order/entities/pre-order.entity';
         PreOrderEntity,
         RoleEntity,
         UserEntity,
+        BillDetailEntity,
+        BillMasterEntity
         ,
       ],
     }),
     inject: [ConfigService], // Explicitly inject ConfigService
   }),
-    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, PreOrderModule],
+    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, PreOrderModule, BillModule],
   controllers: [AppController],
   providers: [AppService, /*{ provide: APP_GUARD, useClass: AtGuard }*/],
 

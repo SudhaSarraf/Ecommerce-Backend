@@ -46,6 +46,11 @@ export class CreateProductDto {
   @IsDecimal()
   @Type(() => Number)
   @IsOptional()
+  discountPercentage?: number;
+
+  @IsDecimal()
+  @Type(() => Number)
+  @IsOptional()
   discountPrice?: number;
 
   @IsDate()
