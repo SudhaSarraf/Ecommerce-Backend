@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
-import { Category } from './entities/product.entity';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { RoleGuard } from 'src/guards/role.guard';
 
@@ -37,10 +36,10 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  @Get('/getByCategory/:category')
-  async findByAdsCategory(@Param('category') category: Category) {
-    return await this.productService.findByCategory(category);
-  }
+  // @Get('/getByCategory/:category')
+  // async findByAdsCategory(@Param('category') category: Category) {
+  //   return await this.productService.findByCategory(category);
+  // }
 
   // @UseGuards(RoleGuard)
   // @Roles('admin', 'author')

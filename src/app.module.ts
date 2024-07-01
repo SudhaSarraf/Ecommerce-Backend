@@ -22,7 +22,6 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { CartItemModule } from './cart-item/cart-item.module';
-import { PreOrderModule } from './pre-order/pre-order.module';
 import { RoleEntity } from './role/entities/role.entity';
 import { UserEntity } from './user/entities/user.entity';
 import { ProductEntity } from './product/entities/product.entity';
@@ -30,10 +29,20 @@ import { OrderEntity } from './order/entities/order.entity';
 import { OrderItemEntity } from './order-item/entities/order-item.entity';
 import { CartEntity } from './cart/entities/cart.entity';
 import { CartItemEntity } from './cart-item/entities/cart-item.entity';
-import { PreOrderEntity } from './pre-order/entities/pre-order.entity';
 import { BillModule } from './bill/bill.module';
 import { BillDetailEntity } from './bill/entities/bill-detail.entity';
 import { BillMasterEntity } from './bill/entities/bill-master.entity';
+import { PurchaseEntryModule } from './purchase-entry/purchase-entry.module';
+import { IssuedProductFromStoreModule } from './issued-product-from-store/issued-product-from-store.module';
+import { ReturnPurchaseEntryModule } from './return-purchase-entry/return-purchase-entry.module';
+import { ReturnIssuedProductFromStoreModule } from './return-issued-product-from-store/return-issued-product-from-store.module';
+import { CompnayInfoModule } from './compnay-info/compnay-info.module';
+import { BrandModule } from './brand/brand.module';
+import { UnitModule } from './unit/unit.module';
+import { CategoryModule } from './category/category.module';
+import { CompanyInfoEntity } from './compnay-info/entities/compnay-info.entity';
+import { CategoryEntity } from './category/entities/category.entity';
+import { BrandEntity } from './brand/entities/brand.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -64,17 +73,20 @@ import { BillMasterEntity } from './bill/entities/bill-master.entity';
         OrderItemEntity,
         CartEntity,
         CartItemEntity,
-        PreOrderEntity,
         RoleEntity,
         UserEntity,
         BillDetailEntity,
-        BillMasterEntity
+        BillMasterEntity,
+        CompanyInfoEntity,
+        CategoryEntity,
+        BrandEntity,
+        
         ,
       ],
     }),
     inject: [ConfigService], // Explicitly inject ConfigService
   }),
-    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, PreOrderModule, BillModule],
+    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, BillModule, PurchaseEntryModule, IssuedProductFromStoreModule, ReturnPurchaseEntryModule, ReturnIssuedProductFromStoreModule, CategoryModule, BrandModule, UnitModule, CompnayInfoModule],
   controllers: [AppController],
   providers: [AppService, /*{ provide: APP_GUARD, useClass: AtGuard }*/],
 

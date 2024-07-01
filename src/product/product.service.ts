@@ -1,6 +1,6 @@
 import { ConflictException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
-import { Category, ProductEntity } from './entities/product.entity';
+import { ProductEntity } from './entities/product.entity';
 import { EntityManager, QueryFailedError } from 'typeorm';
 import { FilesService } from 'src/files/files.service';
 import { UserService } from 'src/user/users.service';
@@ -30,29 +30,7 @@ export class ProductService {
 
       const product = {...productDto, images: imageNames};
       const productEntity = new ProductEntity(product);
-      productEntity.createdBy = `${usr.firstName} ${usr.lastName}`;
-      productEntity.inStock = true;
-      productEntity.user = usr;
-
-      const result = await this.entityManager.save(ProductEntity, {...productEntity})
-      if(!result) throw new InternalServerErrorException();
-      const {
-        productId,
-        name,
-        description,
-        images,
-        price,
-        inStock,
-        stock,
-        category,
-        tags,
-        discountPercentage,
-        discountPrice,
-        harvestDate,
-        user: {userId}
-      } = result;
-      return {productId, name, description, images: imageNames, price, inStock, stock, category,
-        tags,discountPercentage, discountPrice, harvestDate, userId};
+      
     } catch (error) {
       if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
         throw new ConflictException('Duplicate entry detected: ' + error.message);
@@ -64,93 +42,93 @@ export class ProductService {
 
   async findAll() {
     try {
-          const productData = await this.entityManager.find(ProductEntity, {
-            where: {
-              inStock: true
-            },
-            select :{
-              productId: true,
-              name: true,
-              description: true,
-              price: true,
-              images: true,
-              inStock: true,
-              stock: true,
-              category: true,
-              tags: true,
-              discountPrice: true,
-              harvestDate: true,
-            },
-            order: {
-              productId: 'DESC'
-            }
-          });
-          if(productData.length > 0) return productData;
-          else throw new EntityNotFoundException();
+          // const productData = await this.entityManager.find(ProductEntity, {
+          //   where: {
+          //     inStock: true
+          //   },
+          //   select :{
+          //     productId: true,
+          //     name: true,
+          //     description: true,
+          //     price: true,
+          //     images: true,
+          //     inStock: true,
+          //     stock: true,
+          //     category: true,
+          //     tags: true,
+          //     discountPrice: true,
+          //     harvestDate: true,
+          //   },
+          //   order: {
+          //     productId: 'DESC'
+          //   }
+          // });
+          // if(productData.length > 0) return productData;
+          // else throw new EntityNotFoundException();
     } catch (error) {
       throw error;
     }
   }
 
-  async findOne(id: string): Promise<ProductEntity> {
+  async findOne(id: string) {
     try {
-      const product = await this.entityManager.findOne(ProductEntity, { 
-        where: { 
-          productId: id,
-          inStock: true 
-        },
-        select :{
-          productId: true,
-          name: true,
-          description: true,
-          price: true,
-          images: true,
-          inStock: true,
-          stock: true,
-          category: true,
-          tags: true,
-          discountPrice: true,
-          harvestDate: true,
-        }
-      });
-      if (!product) {
-        throw new NotFoundException('Product not found');
-      }
-      return product;
+      // const product = await this.entityManager.findOne(ProductEntity, { 
+      //   where: { 
+      //     productId: id,
+      //     inStock: true 
+      //   },
+      //   select :{
+      //     productId: true,
+      //     name: true,
+      //     description: true,
+      //     price: true,
+      //     images: true,
+      //     inStock: true,
+      //     stock: true,
+      //     category: true,
+      //     tags: true,
+      //     discountPrice: true,
+      //     harvestDate: true,
+      //   }
+      // });
+      // if (!product) {
+      //   throw new NotFoundException('Product not found');
+      // }
+      // return product;
     } 
     catch (error) {
        throw error;
     }
   }
 
-  async findByCategory(category: Category){
+  async findByCategory(){
     try {
-      const results = await this.entityManager.find(ProductEntity, { 
-        where: { 
-          category: category,
-        },
-        select :{
-          productId: true,
-          name: true,
-          description: true,
-          price: true,
-          images: true,
-          inStock: true,
-          stock: true,
-          category: true,
-          tags: true,
-          discountPrice: true,
-          harvestDate: true,
-        },
-      });
-      if (results && results.length > 0) {
-        return results;
-      } else {
-        throw new EntityNotFoundException(
-          `Cannot find Ads in category: ${category}`,
-        );
-      }
-    } 
+      // const results = await this.entityManager.find(ProductEntity, { 
+      //   where: { 
+      //     category: category,
+      //   },
+      //   select :{
+      //     productId: true,
+      //     name: true,
+      //     description: true,
+      //     price: true,
+      //     images: true,
+      //     inStock: true,
+      //     stock: true,
+      //     category: true,
+      //     tags: true,
+      //     discountPrice: true,
+      //     harvestDate: true,
+      //   },
+      // });
+      // if (results && results.length > 0) {
+      //   return results;
+    //   } else {
+    //     throw new EntityNotFoundException(
+    //       `Cannot find Ads in category: ${category}`,
+    //     );
+    //   }
+     } 
     catch (error) {
        throw error;
     }
@@ -158,31 +136,31 @@ export class ProductService {
 
   async update(productDto: UpdateProductDto) {
     // find user which is updating the record
-    const user = await this.userService.findOne(productDto.userId);
+    // const user = await this.userService.findOne(productDto.userId);
 
-    let foundProducts = await this.findOne(productDto.productId);
+    // let foundProducts = await this.findOne(productDto.productId);
 
-    // ideally, this error should never happen.
-    if (!foundProducts) throw new HttpException('News item not found in the database.', 400);
+    // // ideally, this error should never happen.
+    // if (!foundProducts) throw new HttpException('News item not found in the database.', 400);
 
-    let updatedImages: string;
+    // let updatedImages: string;
 
-    // process image updates
-    if (productDto.files) {
-      const tmp = await this.filesService.processMultipleFiles(productDto.files, foundProducts.images);
-      updatedImages = tmp.join(',');
-    }
+    // // process image updates
+    // if (productDto.files) {
+    //   const tmp = await this.filesService.processMultipleFiles(productDto.files, foundProducts.images);
+    //   updatedImages = tmp.join(',');
+    // }
 
-    const proId = foundProducts.productId;
+    // const proId = foundProducts.productId;
 
-    const updatedProduct = await this.entityManager.save({
-      ...productDto, id: proId, image: updatedImages, updatedBy: `${user.firstName} ${user.lastName}`, 
-    });
+    // const updatedProduct = await this.entityManager.save({
+    //   ...productDto, id: proId, image: updatedImages, updatedBy: `${user.firstName} ${user.lastName}`, 
+    // });
 
-    delete updatedProduct.files
+    // delete updatedProduct.files
 
-    if (!updatedProduct) throw new InternalServerErrorException('Failed to update news item');
-    return { updatedProduct };
+    // if (!updatedProduct) throw new InternalServerErrorException('Failed to update news item');
+    // return { updatedProduct };
   }
 
   async remove(id: string) {

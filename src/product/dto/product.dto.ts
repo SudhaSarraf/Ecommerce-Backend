@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsDecimal, IsInt, IsDate, IsArray, IsBoolean, IsNumber } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { Category, Tags } from '../entities/product.entity';
 import { PartialType } from '@nestjs/mapped-types';
+import { ProductSection } from '../entities/product.entity';
 
 export class CreateProductDto {
   @IsString()
@@ -30,33 +30,11 @@ export class CreateProductDto {
   @IsNotEmpty()
   stock: number;
 
-  @IsEnum(Category)
-  @IsNotEmpty()
-  category: Category;
-
   @IsArray()
-  @IsEnum(Tags, { each: true })
-  @IsOptional()
-  tags: Tags[];
+  @IsEnum(ProductSection)
+  @IsNotEmpty()
+  productSection: ProductSection;
 
-  // @IsString()
-  // @IsOptional()
-  // organicCertification?: string;
-
-  @IsDecimal()
-  @Type(() => Number)
-  @IsOptional()
-  discountPercentage?: number;
-
-  @IsDecimal()
-  @Type(() => Number)
-  @IsOptional()
-  discountPrice?: number;
-
-  @IsDate()
-  @Type(() => Date)
-  @IsOptional()
-  harvestDate?: Date;
 
   userId: string;
 }

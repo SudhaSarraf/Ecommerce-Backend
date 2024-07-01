@@ -1,5 +1,7 @@
+import { CategoryEntity } from 'src/category/entities/category.entity';
 import { Public } from './../../common/public.decorator';
 import { AbstractEntity } from 'src/common/abstract.entity';
+import { CompanyInfoEntity } from 'src/compnay-info/entities/compnay-info.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
     Entity,
@@ -11,45 +13,64 @@ import {
     ManyToOne,
     JoinColumn,
 } from 'typeorm';
+import { BrandEntity } from 'src/brand/entities/brand.entity';
 
-export enum Category {
-    FRUIT = 'FRUIT',
-    VEGETABLE = 'VEGETABLE',
-}
-
-export enum Tags {
-    ORGANIC = 'ORGANIC',
-    SEASONAL = 'SEASONAL',
-    EXOTIC = 'EXOTIC',
-    LOCAL = 'LOCAL',
-    FRESH = 'FRESH',
-    CERTIFIED = 'CERTIFIED',
-    GMO_FREE = 'GMO_FREE',
-    FARM_FRESH = 'FARM_FRESH',
-}
+export enum ProductSection {
+    mens = 'men',
+    womwns = 'womens',
+    kids = 'kids',
+  }
 
 @Entity({ name: 'product', schema:'Public' })
 export class ProductEntity extends AbstractEntity<ProductEntity> {
     @PrimaryGeneratedColumn('uuid')
     productId: string;
 
-    @Column({unique: true})
-    name: string;
+    @Column({ unique: true, nullable: false })
+    productCode: string;
 
-    @Column('text')
-    description: string;
+    @Column({ unique: true, nullable: false })
+    barcode: string;
+
+    @Column()
+    productName: string;
+
+    // @Column()
+    // brand: string;
 
     @Column('decimal', { precision: 10, scale: 2 })
-    price: number;
+    purchasePrice: number;
+
+    @Column('decimal', { precision: 10, scale: 2 })
+    sellingPrice: number;
+
+    @Column('decimal', { precision: 10, scale: 2 })
+    offerPrice: number;
+
+    @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false })
+    offerFrom: number;
+
+    @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false })
+    offerUpto: number;
 
     @Column()
     images: string;
 
-    @Column({ type: 'boolean' })
-    inStock: boolean;
+    @Column({
+        name: 'productSection',
+        type: 'enum',
+        enum: ProductSection,
+      })
+    productSection: ProductSection;
 
-    @Column('int')
-    stock: number;
+    @Column({ type: 'int', nullable: false })
+    companyId: number;
+
+    @Column({ type: 'int', nullable: false })
+    categoryId: number;
+
+    @Column({ type: 'int', nullable: false })
+    brandId: number;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -59,33 +80,6 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
 
     @DeleteDateColumn()
     deletedAt: Date;
-
-    @Column({
-        type: 'enum',
-        enum: Category,
-    })
-    category: Category;
-
-    @Column({
-        type: 'simple-array',
-        nullable: true,
-    })
-    tags: Tags[];
-
-    @Column({ nullable: true })
-    organicCertification: string;
-
-    @Column('decimal',{ precision: 10, scale: 2 , nullable: true})
-    discountPercentage: number;
-
-    @Column('decimal', { precision: 10, scale: 2 , nullable: true})
-    discountPrice: number;
-
-    @Column({ nullable: true })
-    supplier: string;
-
-    @Column('date', { nullable: true })
-    harvestDate: Date;
 
     @Column({type:'varchar'})
     creatorId: string;
@@ -102,4 +96,16 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
         name: 'creatorId',
     })
     user: UserEntity;
+
+    @ManyToOne(() => CompanyInfoEntity, company => company.products)
+    @JoinColumn({name: 'companyId'})
+    company: CompanyInfoEntity;
+
+    @ManyToOne(() => CategoryEntity, category => category.products)
+    @JoinColumn({name: 'categoryId'})
+    category: CategoryEntity;
+
+    @ManyToOne(() => BrandEntity, brand => brand.products)
+    @JoinColumn({name: 'brandId'})
+    brand: BrandEntity;   
 }
