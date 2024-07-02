@@ -65,6 +65,8 @@ export class CreateProductDto {
 
   unitId: number;
 
+  @IsString()
+  @IsNotEmpty()
   creatorId: string;
 
   createdBy: string;
