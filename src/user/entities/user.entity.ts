@@ -8,15 +8,15 @@ import { RoleEntity } from "src/role/entities/role.entity";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('users')
-export class UserEntity extends AbstractEntity<UserEntity>{
+export class UserEntity extends AbstractEntity<UserEntity> {
+    @PrimaryColumn()
+    userId: string;
+
     @Column()
     firstName: string;
 
     @Column()
     lastName: string;
-
-    @PrimaryColumn()
-    userId: string;
 
     @Column({ type: "varchar", length: 15, unique: true })
     phone?: string;
@@ -65,7 +65,7 @@ export class UserEntity extends AbstractEntity<UserEntity>{
     image?: string;
 
     @Column({ nullable: true, default: null, type: 'text' })
-    hashedRt: string; 
+    hashedRt: string;
 
     @Column('int', { nullable: true, default: null })
     otp1: number;
@@ -82,17 +82,17 @@ export class UserEntity extends AbstractEntity<UserEntity>{
 
     @OneToMany(() => OrderEntity, (order) => order.user)
     orders: OrderEntity[];
-  
+
     @OneToOne(() => CartEntity, (cart) => cart.user, { cascade: true })
     cart: CartEntity;
-    
+
     @OneToMany(() => ProductEntity, (product) => product.user)
     product?: ProductEntity[];
 
-    @OneToMany(() =>BillMasterEntity, (billEntity) => billEntity.user)
+    @OneToMany(() => BillMasterEntity, (billEntity) => billEntity.user)
     bills: BillMasterEntity[];
 
     @ManyToOne(() => CompanyInfoEntity, company => company.users)
-    @JoinColumn({name: 'companyId'})
+    @JoinColumn({ name: 'companyId' })
     company: CompanyInfoEntity;
 }
