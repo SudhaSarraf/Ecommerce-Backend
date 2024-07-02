@@ -5,11 +5,11 @@ import { CompanyInfoEntity } from "src/compnay-info/entities/compnay-info.entity
 import { OrderEntity } from "src/order/entities/order.entity";
 import { ProductEntity } from "src/product/entities/product.entity";
 import { RoleEntity } from "src/role/entities/role.entity";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('users')
 export class UserEntity extends AbstractEntity<UserEntity> {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
     userId: string;
 
     @Column()

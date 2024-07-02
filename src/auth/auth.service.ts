@@ -119,9 +119,9 @@ export class AuthService {
     // at this point we know user has given valid roles, the role objects are
     // saved in mapped variable.
 
-    if (!userData.userId) {
-      userData.userId = uuidv4();
-    }
+    // if (!userData.userId) {
+    //   userData.userId = uuidv4();
+    // }
 
     // hash incoming password before saving in db.
     const hashPassword = await this.hashData(userData.password);
