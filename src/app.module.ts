@@ -44,6 +44,7 @@ import { CompanyInfoEntity } from './compnay-info/entities/compnay-info.entity';
 import { CategoryEntity } from './category/entities/category.entity';
 import { BrandEntity } from './brand/entities/brand.entity';
 import { UnitEntity } from './unit/entities/unit.entity';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -87,7 +88,7 @@ import { UnitEntity } from './unit/entities/unit.entity';
     }),
     inject: [ConfigService], // Explicitly inject ConfigService
   }),
-    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, BillModule, PurchaseEntryModule, IssuedProductFromStoreModule, ReturnPurchaseEntryModule, ReturnIssuedProductFromStoreModule, CategoryModule, BrandModule, UnitModule, CompnayInfoModule],
+    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, BillModule, PurchaseEntryModule, IssuedProductFromStoreModule, ReturnPurchaseEntryModule, ReturnIssuedProductFromStoreModule, CategoryModule, BrandModule, UnitModule, CompnayInfoModule, InventoryModule],
   controllers: [AppController],
   providers: [AppService, /*{ provide: APP_GUARD, useClass: AtGuard }*/],
 

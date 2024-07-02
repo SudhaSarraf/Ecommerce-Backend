@@ -12,13 +12,12 @@ export class ProductService {
     private readonly entityManager: EntityManager,
     private readonly filesService: FilesService,
     private readonly userService: UserService,
-
-  ) {}
+  ) { }
 
   async create(productDto: CreateProductDto) {
     try {
       let entryData = new ProductEntity(productDto);
-      
+
       return await this.entityManager.transaction(async (eManager) => {
         let imageNames: string = '';
         if (productDto.files) {
@@ -28,21 +27,32 @@ export class ProductService {
         }
 
         // we need to append username, so we need this block of code.
-      const usr = await this.userService.findUserById(productDto.creatorId);
-      if (!usr) throw new HttpException('Author record not found in database.', 400);
+        const usr = await this.userService.findUserById(productDto.creatorId);
+        if (!usr) throw new HttpException('Author record not found in database.', 400);
 
-      const newDate = new Date();
+        const newDate = new Date();
 
-      let year = newDate.getFullYear().toString().slice(-2);
-      let month = (newDate.getMonth() + 1).toString().padStart(2, '0'); // Add 1 and pad with 0 if necessary
-      let day = newDate.getDate().toString().padStart(2, '0'); // Get the day of the month and pad with 0 if necessary
+        let year = newDate.getFullYear().toString().slice(-2);
+        let month = (newDate.getMonth() + 1).toString().padStart(2, '0'); // Add 1 and pad with 0 if necessary
+        let day = newDate.getDate().toString().padStart(2, '0'); // Get the day of the month and pad with 0 if necessary
 
-      const formattedDate = `${year}${month}${day}`;
-      let prodName = productDto.productName.substring(0, 3).toUpperCase();
-      let barcode = (`${formattedDate}${prodName}${entryData.companyId}`)
+        const formattedDate = `${year}${month}${day}`;
+        let prodName = productDto.productName.substring(0, 3).toUpperCase();
+        let barcode = (`${formattedDate}${prodName}${entryData.companyId}`)
 
-        const product = {...productDto,barcode, images: imageNames};
+        const product = { ...productDto, barcode, images: imageNames };
         const productEntity = new ProductEntity(product);
+
+        console.log('product entity', productEntity);
+
+        console.log('product entity', productEntity);
+
+        const productDataResult = await eManager.insert(ProductEntity, productEntity);
+        if (productDataResult.identifiers[0].id === 0) throw new InternalServerErrorException();
+
+        // const inventoryCreate = await eManager.insert
+
+
       })
     } catch (error) {
       if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
@@ -55,47 +65,47 @@ export class ProductService {
 
   async findAll() {
     try {
-          const productData = await this.entityManager.find(ProductEntity, {
-            where: {
-              status: true
-            },
-            select :{
-              productId: true,
-              productCode: true,
-              barcode: true,
-              productName: true,
-              purchasePrice: true,
-              sellingPrice: true,
-              offerPrice: true,
-              offerFrom: true,
-              offerUpto: true,
-              images: true,
-              productSection: true,
-              companyId: true,
-              categoryId: true,
-              brandId: true,
-              unitId: true,
-              createdAt: true,
-              updatedAt: true,
-              deletedAt: true,
-              status: true,
-              creatorId: true,
-              createdBy: true,
-              updatedBy: true,
-              category: {
-                categoryName: true
-              },
-              brand: {
-                brandName: true,
-              },
-              unit: {
-                unitName: true,
-              }
-            },
-            relations: ['category','brand','unit']
-          });
-          if(productData.length > 0) return productData;
-          else throw new EntityNotFoundException();
+      const productData = await this.entityManager.find(ProductEntity, {
+        where: {
+          status: true
+        },
+        select: {
+          productId: true,
+          productCode: true,
+          barcode: true,
+          productName: true,
+          purchasePrice: true,
+          sellingPrice: true,
+          offerPrice: true,
+          offerFrom: true,
+          offerUpto: true,
+          images: true,
+          productSection: true,
+          companyId: true,
+          categoryId: true,
+          brandId: true,
+          unitId: true,
+          createdAt: true,
+          updatedAt: true,
+          deletedAt: true,
+          status: true,
+          creatorId: true,
+          createdBy: true,
+          updatedBy: true,
+          category: {
+            categoryName: true
+          },
+          brand: {
+            brandName: true,
+          },
+          unit: {
+            unitName: true,
+          }
+        },
+        relations: ['category', 'brand', 'unit']
+      });
+      if (productData.length > 0) return productData;
+      else throw new EntityNotFoundException();
     } catch (error) {
       throw error;
     }
@@ -103,12 +113,12 @@ export class ProductService {
 
   async findOne(id: string) {
     try {
-      const product = await this.entityManager.findOne(ProductEntity, { 
-        where: { 
+      const product = await this.entityManager.findOne(ProductEntity, {
+        where: {
           productId: id,
-          status: true 
+          status: true
         },
-        select :{
+        select: {
           productId: true,
           productCode: true,
           barcode: true,
@@ -146,9 +156,9 @@ export class ProductService {
         throw new NotFoundException('Product not found');
       }
       return product;
-    } 
+    }
     catch (error) {
-       throw error;
+      throw error;
     }
   }
 
@@ -182,6 +192,6 @@ export class ProductService {
   }
 
   async remove(id: string) {
-    return this.entityManager.softDelete(ProductEntity, {id: id});
+    return this.entityManager.softDelete(ProductEntity, { id: id });
   }
 }
