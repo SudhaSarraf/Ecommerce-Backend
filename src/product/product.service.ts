@@ -70,7 +70,7 @@ export class ProductService {
               status: true
             },
             select :{
-              productId: true,
+              id: true,
               productCode: true,
               barcode: true,
               productName: true,
@@ -118,11 +118,11 @@ export class ProductService {
     try {
       const product = await this.entityManager.findOne(ProductEntity, {
         where: {
-          productId: id,
+          id: id,
           status: true
         },
         select: {
-          productId: true,
+          id: true,
           productCode: true,
           barcode: true,
           productName: true,
@@ -172,7 +172,7 @@ export class ProductService {
     // find user which is updating the record
     // const user = await this.userService.findOne(productDto.userId);
 
-    // let foundProducts = await this.findOne(productDto.productId);
+    // let foundProducts = await this.findOne(productDto.id);
 
     // // ideally, this error should never happen.
     // if (!foundProducts) throw new HttpException('News item not found in the database.', 400);
@@ -185,7 +185,7 @@ export class ProductService {
     //   updatedImages = tmp.join(',');
     // }
 
-    // const proId = foundProducts.productId;
+    // const proId = foundProducts.id;
 
     // const updatedProduct = await this.entityManager.save({
     //   ...productDto, id: proId, image: updatedImages, updatedBy: `${user.firstName} ${user.lastName}`, 

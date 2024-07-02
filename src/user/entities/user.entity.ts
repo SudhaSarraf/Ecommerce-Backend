@@ -9,7 +9,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTab
 
 @Entity('users')
 export class UserEntity extends AbstractEntity<UserEntity> {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     userId: string;
 
     @Column()
