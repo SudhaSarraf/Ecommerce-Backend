@@ -1,26 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UpdateUnitDto } from './dto/update-unit.dto';
+import { EntityManager } from 'typeorm';
+import { UnitEntity } from './entities/unit.entity';
 
 @Injectable()
 export class UnitService {
-  create(createUnitDto: CreateUnitDto) {
-    return 'This action adds a new unit';
+  constructor(private readonly entityManager: EntityManager) {}
+
+  async create(createunitDto: CreateUnitDto) {
+    const unitEntity = new UnitEntity(createunitDto);
+    const result = await this.entityManager.save(UnitEntity, unitEntity);
+    return result;
   }
 
-  findAll() {
-    return `This action returns all unit`;
+  async findAll() {
+    return await this.entityManager.find(UnitEntity);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} unit`;
+  async findOne(id: number) {
+    const result = await this.entityManager.findOne(UnitEntity, {
+      where: {
+        id: id
+      },
+    });
+    if(!result) throw new NotFoundException("No record found for requested unit");
+    return result;
   }
 
-  update(id: number, updateUnitDto: UpdateUnitDto) {
-    return `This action updates a #${id} unit`;
+  async update(id: number, updateunitDto: UpdateUnitDto) {
+    const existingUnit = await this.findOne(id);
+    if(!existingUnit) throw new NotFoundException(`Brand ${existingUnit} does not exist in database`);
+    return await this.entityManager.update(UnitEntity, {id: id}, {...existingUnit, ...updateunitDto});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} unit`;
+  async remove(id: number) {
+    return await this.entityManager.softDelete(UnitEntity, {id:id});
   }
 }

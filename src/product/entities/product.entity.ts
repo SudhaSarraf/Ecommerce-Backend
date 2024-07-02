@@ -14,6 +14,7 @@ import {
     JoinColumn,
 } from 'typeorm';
 import { BrandEntity } from 'src/brand/entities/brand.entity';
+import { UnitEntity } from 'src/unit/entities/unit.entity';
 
 export enum ProductSection {
     mens = 'men',
@@ -72,6 +73,9 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
     @Column({ type: 'int', nullable: false })
     brandId: number;
 
+    @Column({ type: 'int', nullable: false })
+    unitId: number;
+
     @CreateDateColumn()
     createdAt: Date;
 
@@ -80,6 +84,9 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
 
     @DeleteDateColumn()
     deletedAt: Date;
+
+    @Column()
+    status: boolean;
 
     @Column({type:'varchar'})
     creatorId: string;
@@ -107,5 +114,9 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
 
     @ManyToOne(() => BrandEntity, brand => brand.products)
     @JoinColumn({name: 'brandId'})
-    brand: BrandEntity;   
+    brand: BrandEntity;  
+    
+    @ManyToOne(() => UnitEntity, unit => unit.products)
+    @JoinColumn({name: 'unitId'})
+    unit: UnitEntity;  
 }

@@ -1,26 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { BrandEntity } from './entities/brand.entity';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class BrandService {
-  create(createBrandDto: CreateBrandDto) {
-    return 'This action adds a new brand';
+  constructor(private readonly entityManager: EntityManager) {}
+
+  async create(createBrandDto: CreateBrandDto) {
+    const brandEntity = new BrandEntity(createBrandDto);
+    const result = await this.entityManager.save(BrandEntity, brandEntity);
+    return result;
   }
 
-  findAll() {
-    return `This action returns all brand`;
+  async findAll() {
+    return await this.entityManager.find(BrandEntity);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} brand`;
+  async findOne(id: number) {
+    const result = await this.entityManager.findOne(BrandEntity, {
+      where: {
+        id: id
+      },
+    });
+    if(!result) throw new NotFoundException("No record found for requested brand");
+    return result;
   }
 
-  update(id: number, updateBrandDto: UpdateBrandDto) {
-    return `This action updates a #${id} brand`;
+  async update(id: number, updateBrandDto: UpdateBrandDto) {
+    const existingBrand = await this.findOne(id);
+    if(!existingBrand) throw new NotFoundException(`Brand ${existingBrand} does not exist in database`);
+    return await this.entityManager.update(BrandEntity, {id: id}, {...existingBrand, ...updateBrandDto});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} brand`;
+  async remove(id: number) {
+    return await this.entityManager.softDelete(BrandEntity, {id:id});
   }
 }

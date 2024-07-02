@@ -43,6 +43,7 @@ import { CategoryModule } from './category/category.module';
 import { CompanyInfoEntity } from './compnay-info/entities/compnay-info.entity';
 import { CategoryEntity } from './category/entities/category.entity';
 import { BrandEntity } from './brand/entities/brand.entity';
+import { UnitEntity } from './unit/entities/unit.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -80,7 +81,7 @@ import { BrandEntity } from './brand/entities/brand.entity';
         CompanyInfoEntity,
         CategoryEntity,
         BrandEntity,
-        
+        UnitEntity
         ,
       ],
     }),

@@ -1,26 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { EntityManager } from 'typeorm';
+import { CategoryEntity } from './entities/category.entity';
 
 @Injectable()
 export class CategoryService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(private readonly entityManager: EntityManager) {}
+
+  async create(createCategoryDto: CreateCategoryDto) {
+    const categoryEntity = new CategoryEntity(createCategoryDto);
+    const result = await this.entityManager.save(CategoryEntity, categoryEntity);
+    return result;
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll() {
+    return await this.entityManager.find(CategoryEntity);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number) {
+    const result = await this.entityManager.findOne(CategoryEntity, {
+      where: {
+        id: id
+      },
+    });
+    if(!result) throw new NotFoundException("No record found for requested category");
+    return result;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    const existingCategory = await this.findOne(id);
+    if(!existingCategory) throw new NotFoundException(`Brand ${existingCategory} does not exist in database`);
+    return await this.entityManager.update(CategoryEntity, {id: id}, {...existingCategory, ...updateCategoryDto});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    return await this.entityManager.softDelete(CategoryEntity, {id:id});
   }
 }

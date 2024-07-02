@@ -1,8 +1,9 @@
+import { AbstractEntity } from "src/common/abstract.entity";
 import { ProductEntity } from "src/product/entities/product.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({ name: 'category', schema:'Public' })
-export class CategoryEntity {
+export class CategoryEntity extends AbstractEntity<CategoryEntity>{
     @PrimaryGeneratedColumn()
     id: number;
 

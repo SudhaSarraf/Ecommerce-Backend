@@ -6,16 +6,34 @@ import { ProductSection } from '../entities/product.entity';
 export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  productName: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  productCode: string;
 
   @Type(() => Number)
   @IsDecimal()
   @IsNotEmpty()
-  price: number;
+  purchasePrice: number;
+
+  @Type(() => Number)
+  @IsDecimal()
+  @IsNotEmpty()
+  sellingPrice: number;
+
+  @Type(() => Number)
+  @IsDecimal()
+  @IsNotEmpty()
+  offerPrice: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  offerFrom: number
+
+  @Type(() => Number)
+  @IsNumber()
+  offerUpto: number
 
   files?: Array<Express.Multer.File>;
   
@@ -23,7 +41,7 @@ export class CreateProductDto {
   @IsOptional()
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
-  inStock: boolean;
+  status: boolean;
 
   @IsNumber()
   @Type(() => Number)
@@ -35,8 +53,23 @@ export class CreateProductDto {
   @IsNotEmpty()
   productSection: ProductSection;
 
+  @Type(() => Number)
+  @IsNumber()
+  companyId: number;
 
-  userId: string;
+  @Type(() => Number)
+  @IsNumber()
+  categoryId: number;
+
+  brandId: number;
+
+  unitId: number;
+
+  creatorId: string;
+
+  createdBy: string;
+
+  updatedBy?: string;
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {

@@ -1,8 +1,9 @@
+import { AbstractEntity } from "src/common/abstract.entity";
 import { ProductEntity } from "src/product/entities/product.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({ name: 'brand', schema:'Public' })
-export class BrandEntity {
+export class BrandEntity extends AbstractEntity<BrandEntity>{
     @PrimaryGeneratedColumn()
     id: number;
 
