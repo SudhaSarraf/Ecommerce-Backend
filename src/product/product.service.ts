@@ -5,6 +5,7 @@ import { EntityManager, QueryFailedError } from 'typeorm';
 import { FilesService } from 'src/files/files.service';
 import { UserService } from 'src/user/users.service';
 import { EntityNotFoundException } from 'src/common/errors/entityNotFoundException';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class ProductService {
@@ -27,7 +28,11 @@ export class ProductService {
         }
 
         // we need to append username, so we need this block of code.
-        const usr = await this.userService.findUserById(productDto.creatorId);
+        const usr = await eManager.findOne(UserEntity, {
+          where: {
+            userId: productDto.creatorId
+          }
+        });
         if (!usr) throw new HttpException('Author record not found in database.', 400);
 
         const newDate = new Date();
@@ -49,17 +54,20 @@ export class ProductService {
 
         const productDataResult = await eManager.insert(ProductEntity, productEntity);
         if (productDataResult.identifiers[0].id === 0) throw new InternalServerErrorException();
+        console.log(productDataResult);
 
         // const inventoryCreate = await eManager.insert
 
 
       })
     } catch (error) {
-      if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
-        throw new ConflictException('Duplicate entry detected: ' + error.message);
-      } else {
-        throw new InternalServerErrorException(error.message);
-      }
+      console.log('errror', error);
+      throw error;
+      // if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
+      //   throw new ConflictException('Duplicate entry detected: ' + error.message);
+      // } else {
+      //   throw new InternalServerErrorException(error.message);
+      // }
     }
   }
 
