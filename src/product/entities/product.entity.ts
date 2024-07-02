@@ -54,6 +54,15 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false })
     offerUpto: number;
 
+    @Column({ nullable: true })
+    manfDate: Date;
+
+    @Column({ nullable: true })
+    expiryDate: Date;
+
+    @Column({ nullable: true })
+    validityMonth: Date;
+
     @Column()
     images: string;
 

@@ -17,20 +17,33 @@ export class ProductService {
 
   async create(productDto: CreateProductDto) {
     try {
-    //   let imageNames: string = '';
-    //   if (productDto.files) {
-    //     const namePromises = productDto.files.map(async (f: any) => await this.filesService.processFile(f));
-    //     const names = await Promise.all(namePromises);
-    //     imageNames = names.join();
-    //   }
-
-    //   // we need to append username, so we need this block of code.
-    // const usr = await this.userService.findUserById(productDto.creatorId);
-    // if (!usr) throw new HttpException('Author record not found in database.', 400);
-
-    //   const product = {...productDto, images: imageNames};
-    //   const productEntity = new ProductEntity(product);
+      let entryData = new ProductEntity(productDto);
       
+      return await this.entityManager.transaction(async (eManager) => {
+        let imageNames: string = '';
+        if (productDto.files) {
+          const namePromises = productDto.files.map(async (f: any) => await this.filesService.processFile(f));
+          const names = await Promise.all(namePromises);
+          imageNames = names.join();
+        }
+
+        // we need to append username, so we need this block of code.
+      const usr = await this.userService.findUserById(productDto.creatorId);
+      if (!usr) throw new HttpException('Author record not found in database.', 400);
+
+      const newDate = new Date();
+
+      let year = newDate.getFullYear().toString().slice(-2);
+      let month = (newDate.getMonth() + 1).toString().padStart(2, '0'); // Add 1 and pad with 0 if necessary
+      let day = newDate.getDate().toString().padStart(2, '0'); // Get the day of the month and pad with 0 if necessary
+
+      const formattedDate = `${year}${month}${day}`;
+      let prodName = productDto.productName.substring(0, 3).toUpperCase();
+      let barcode = (`${formattedDate}${prodName}${entryData.companyId}`)
+
+        const product = {...productDto,barcode, images: imageNames};
+        const productEntity = new ProductEntity(product);
+      })
     } catch (error) {
       if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
         throw new ConflictException('Duplicate entry detected: ' + error.message);
