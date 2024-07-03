@@ -6,8 +6,8 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, Pri
 
 @Entity({ name: 'inventory', schema:'Public' })
 export class InventoryEntity extends AbstractEntity<InventoryEntity> {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    // @PrimaryGeneratedColumn('uuid')
+    // id: string;
 
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false })
     quantity: number;

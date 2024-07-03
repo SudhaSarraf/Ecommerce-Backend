@@ -25,8 +25,8 @@ export enum ProductSection {
 
 @Entity({ name: 'product', schema:'Public' })
 export class ProductEntity extends AbstractEntity<ProductEntity> {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    // @PrimaryGeneratedColumn('uuid')
+    // id: string;
 
     @Column({ unique: true, nullable: false })
     productCode: string;

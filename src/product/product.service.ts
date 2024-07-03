@@ -122,7 +122,7 @@ export class ProductService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     try {
       const product = await this.entityManager.findOne(ProductEntity, {
         where: {

@@ -6,8 +6,8 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, Pri
 
 @Entity({ name: 'category', schema:'Public' })
 export class CategoryEntity extends AbstractEntity<CategoryEntity>{
-    @PrimaryGeneratedColumn('uuid')
-    id: number;
+    // @PrimaryGeneratedColumn('uuid')
+    // id: number;
 
     @Column()
     categoryName: string;

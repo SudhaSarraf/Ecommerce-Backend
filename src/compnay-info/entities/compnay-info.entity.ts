@@ -12,8 +12,8 @@ import { Entity, Column, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryG
 @Entity({ name: 'companyinfo', schema: 'public' })
 export class CompanyInfoEntity extends AbstractEntity<CompanyInfoEntity> {
 
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+    // @PrimaryGeneratedColumn('uuid')
+    // id: string
 
     @Column({ type: 'varchar', length: 500 })
     name: string;

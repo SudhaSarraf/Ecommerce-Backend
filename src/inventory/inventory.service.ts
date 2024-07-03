@@ -46,7 +46,7 @@ export class InventoryService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     try {
       const inventoryData = await this.entityManager.findOne(InventoryEntity, {
         where: {
