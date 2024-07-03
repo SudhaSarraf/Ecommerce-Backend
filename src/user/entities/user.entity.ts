@@ -3,6 +3,7 @@ import { BrandEntity } from "src/brand/entities/brand.entity";
 import { CartEntity } from "src/cart/entities/cart.entity";
 import { CategoryEntity } from "src/category/entities/category.entity";
 import { AbstractEntity } from "src/common/abstract.entity";
+import { AbstractWithNoId } from "src/common/abstractWithNoId";
 import { CompanyInfoEntity } from "src/compnay-info/entities/compnay-info.entity";
 import { InventoryEntity } from "src/inventory/entities/inventory.entity";
 import { OrderEntity } from "src/order/entities/order.entity";
@@ -12,9 +13,9 @@ import { UnitEntity } from "src/unit/entities/unit.entity";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('users')
-export class UserEntity extends AbstractEntity<UserEntity> {
-    @PrimaryGeneratedColumn('uuid')
-    userId: string;
+export class UserEntity extends AbstractWithNoId<UserEntity> {
+    @PrimaryGeneratedColumn()
+    userId: number;
 
     @Column()
     firstName: string;

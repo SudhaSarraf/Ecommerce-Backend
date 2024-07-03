@@ -10,9 +10,9 @@ export class SignUpUserDto {
   @IsString()
   lastName: string;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  userId?: string;
+  userId?: number;
 
   @IsString()
   @IsOptional()

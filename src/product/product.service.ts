@@ -73,50 +73,50 @@ export class ProductService {
 
   async findAll() {
     try {
-          const productData = await this.entityManager.find(ProductEntity, {
-            where: {
-              status: true
-            },
-            select :{
-              id: true,
-              productCode: true,
-              barcode: true,
-              productName: true,
-              purchasePrice: true,
-              sellingPrice: true,
-              offerPrice: true,
-              offerFrom: true,
-              offerUpto: true,
-              manfDate: true,
-              expiryDate: true,
-              validityMonth: true,
-              images: true,
-              productSection: true,
-              companyId: true,
-              categoryId: true,
-              brandId: true,
-              unitId: true,
-              createdAt: true,
-              updatedAt: true,
-              deletedAt: true,
-              status: true,
-              creatorId: true,
-              createdBy: true,
-              updatedBy: true,
-              category: {
-                categoryName: true
-              },
-              brand: {
-                brandName: true,
-              },
-              unit: {
-                unitName: true,
-              }
-            },
-            relations: ['category','brand','unit']
-          });
-          if(productData.length > 0) return productData;
-          else throw new EntityNotFoundException();
+      const productData = await this.entityManager.find(ProductEntity, {
+        where: {
+          status: true
+        },
+        select: {
+          id: true,
+          productCode: true,
+          barcode: true,
+          productName: true,
+          purchasePrice: true,
+          sellingPrice: true,
+          offerPrice: true,
+          offerFrom: true,
+          offerUpto: true,
+          manfDate: true,
+          expiryDate: true,
+          validityMonth: true,
+          images: true,
+          productSection: true,
+          companyId: true,
+          categoryId: true,
+          brandId: true,
+          unitId: true,
+          createdAt: true,
+          updatedAt: true,
+          deletedAt: true,
+          status: true,
+          creatorId: true,
+          createdBy: true,
+          updatedBy: true,
+          category: {
+            categoryName: true
+          },
+          brand: {
+            brandName: true,
+          },
+          unit: {
+            unitName: true,
+          }
+        },
+        relations: ['category', 'brand', 'unit']
+      });
+      if (productData.length > 0) return productData;
+      else throw new EntityNotFoundException();
     } catch (error) {
       throw error;
     }
@@ -205,7 +205,7 @@ export class ProductService {
     // return { updatedProduct };
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     return this.entityManager.softDelete(ProductEntity, { id: id });
   }
 }

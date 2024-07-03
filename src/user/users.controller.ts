@@ -32,7 +32,7 @@ export class UsersController {
   // @Roles('admin','author')
   @Patch('update/:id')
   @FormDataRequest()
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.usersService.update(id, updateUserDto);
     if (!user) new HttpException('Failed to update user data', 500);
     const { userId, firstName, lastName, email, roles } = user;
@@ -42,7 +42,7 @@ export class UsersController {
   // @UseGuards(AtGuard)
   @Patch('updatePassword/:id')
   async updatePassword(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
     return await this.usersService.updatePassword(id, updatePasswordDto);
@@ -52,8 +52,8 @@ export class UsersController {
   // @UseGuards(RoleGuard)
   // @Roles('admin','author')
   @Get('getById/:id')
-  async findOne(@Param('id') id: string) {
-    if (id.trim() === 'undefined' || '') throw new ForbiddenException();
+  async findOne(@Param('id') id: number) {
+    if (id === null || '') throw new ForbiddenException();
     const user = await this.usersService.findOne(id);
     if (!user) throw new HttpException('User not found', 400);
     return user;
@@ -63,7 +63,7 @@ export class UsersController {
   // @UseGuards(RoleGuard)
   // @Roles('admin')
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.usersService.remove(id);
   }
 

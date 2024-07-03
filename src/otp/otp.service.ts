@@ -14,7 +14,7 @@ export class OtpService {
   async generateAndPatchOTP(email: string) {
     let successMessage: string;
     try {
-      let userId: string;
+      let userId: number;
       let resultOTP = await this.entityManager.transaction(async eManager => {
         if (!email || email === '') throw new InternalServerErrorException('User Id Missing.');
         let generatedOTP: number;

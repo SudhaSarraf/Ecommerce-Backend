@@ -4,132 +4,132 @@ import { AbstractEntity } from 'src/common/abstract.entity';
 import { CompanyInfoEntity } from 'src/compnay-info/entities/compnay-info.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    DeleteDateColumn,
-    ManyToOne,
-    JoinColumn,
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { BrandEntity } from 'src/brand/entities/brand.entity';
 import { UnitEntity } from 'src/unit/entities/unit.entity';
 import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
 
 export enum ProductSection {
-    mens = 'men',
-    womwns = 'womens',
-    kids = 'kids',
-  }
+  mens = 'men',
+  womwns = 'womens',
+  kids = 'kids',
+}
 
-@Entity({ name: 'product', schema:'Public' })
+@Entity({ name: 'product', schema: 'Public' })
 export class ProductEntity extends AbstractEntity<ProductEntity> {
-    // @PrimaryGeneratedColumn('uuid')
-    // id: string;
+  // @PrimaryGeneratedColumn('uuid')
+  // id: string;
 
-    @Column({ unique: true, nullable: false })
-    productCode: string;
+  @Column({ unique: true, nullable: false })
+  productCode: string;
 
-    @Column({ unique: true, nullable: false })
-    barcode: string;
+  @Column({ unique: true, nullable: false })
+  barcode: string;
 
-    @Column()
-    productName: string;
+  @Column()
+  productName: string;
 
-    // @Column()
-    // brand: string;
+  // @Column()
+  // brand: string;
 
-    @Column('decimal', { precision: 10, scale: 2 })
-    purchasePrice: number;
+  @Column('decimal', { precision: 10, scale: 2 })
+  purchasePrice: number;
 
-    @Column('decimal', { precision: 10, scale: 2 })
-    sellingPrice: number;
+  @Column('decimal', { precision: 10, scale: 2 })
+  sellingPrice: number;
 
-    @Column('decimal', { precision: 10, scale: 2 })
-    offerPrice: number;
+  @Column('decimal', { precision: 10, scale: 2 })
+  offerPrice: number;
 
-    @Column({ type: 'date', nullable: true })
-    offerFrom: Date;
+  @Column({ type: 'date', nullable: true })
+  offerFrom: Date;
 
-    @Column({ type: 'date', nullable: true })
-    offerUpto: Date;
+  @Column({ type: 'date', nullable: true })
+  offerUpto: Date;
 
-    @Column({ nullable: true })
-    manfDate: Date;
+  @Column({ nullable: true })
+  manfDate: Date;
 
-    @Column({ nullable: true })
-    expiryDate: Date;
+  @Column({ nullable: true })
+  expiryDate: Date;
 
-    @Column({ nullable: true })
-    validityMonth: Date;
+  @Column({ nullable: true })
+  validityMonth: Date;
 
-    @Column()
-    images: string;
+  @Column()
+  images: string;
 
-    @Column({
-        name: 'productSection',
-        type: 'enum',
-        enum: ProductSection,
-      })
-    productSection: ProductSection;
+  @Column({
+    name: 'productSection',
+    type: 'enum',
+    enum: ProductSection,
+  })
+  productSection: ProductSection;
 
-    @Column({ type: 'int', nullable: false })
-    companyId: number;
+  @Column({ type: 'int', nullable: false })
+  companyId: number;
 
-    @Column({ type: 'int', nullable: false })
-    categoryId: number;
+  @Column({ type: 'int', nullable: false })
+  categoryId: number;
 
-    @Column({ type: 'int', nullable: false })
-    brandId: number;
+  @Column({ type: 'int', nullable: false })
+  brandId: number;
 
-    @Column({ type: 'int', nullable: false })
-    unitId: number;
+  @Column({ type: 'int', nullable: false })
+  unitId: number;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    @DeleteDateColumn()
-    deletedAt: Date;
+  @DeleteDateColumn()
+  deletedAt: Date;
 
-    @Column()
-    status: boolean;
+  @Column()
+  status: boolean;
 
-    @Column({type:'varchar'})
-    creatorId: string;
+  @Column({ type: 'int' })
+  creatorId: number;
 
-    @Column({ length: 50, default: "unknown" })
-    createdBy: string;
+  @Column({ length: 50, default: "unknown" })
+  createdBy: string;
 
-    @Column({ length: 50, default: null, nullable: true })
-    updatedBy: string;
+  @Column({ length: 50, default: null, nullable: true })
+  updatedBy: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.product, { nullable: false, eager: true, cascade: ['insert', 'update'] })
-    @JoinColumn({
-        referencedColumnName: 'userId',
-        name: 'creatorId',
-    })
-    user: UserEntity;
+  @ManyToOne(() => UserEntity, (user) => user.product, { nullable: false, eager: true, cascade: ['insert', 'update'] })
+  @JoinColumn({
+    referencedColumnName: 'userId',
+    name: 'creatorId',
+  })
+  user: UserEntity;
 
-    @ManyToOne(() => CompanyInfoEntity, company => company.products)
-    @JoinColumn({name: 'companyId'})
-    company: CompanyInfoEntity;
+  @ManyToOne(() => CompanyInfoEntity, company => company.products)
+  @JoinColumn({ name: 'companyId' })
+  company: CompanyInfoEntity;
 
-    @ManyToOne(() => CategoryEntity, category => category.products)
-    @JoinColumn({name: 'categoryId'})
-    category: CategoryEntity;
+  @ManyToOne(() => CategoryEntity, category => category.products)
+  @JoinColumn({ name: 'categoryId' })
+  category: CategoryEntity;
 
-    @ManyToOne(() => BrandEntity, brand => brand.products)
-    @JoinColumn({name: 'brandId'})
-    brand: BrandEntity;  
-    
-    @ManyToOne(() => UnitEntity, unit => unit.products)
-    @JoinColumn({name: 'unitId'})
-    unit: UnitEntity;  
+  @ManyToOne(() => BrandEntity, brand => brand.products)
+  @JoinColumn({ name: 'brandId' })
+  brand: BrandEntity;
 
-    @ManyToOne(() => InventoryEntity, (inventory) => inventory.product, { nullable: false, eager: true, cascade: ['insert', 'update'] })
-    inventory: InventoryEntity;
+  @ManyToOne(() => UnitEntity, unit => unit.products)
+  @JoinColumn({ name: 'unitId' })
+  unit: UnitEntity;
+
+  @ManyToOne(() => InventoryEntity, (inventory) => inventory.product, { nullable: false, eager: true, cascade: ['insert', 'update'] })
+  inventory: InventoryEntity;
 }

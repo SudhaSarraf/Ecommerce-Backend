@@ -34,7 +34,7 @@ export class CreateProductDto {
   offerUpto: Date;
 
   files?: Array<Express.Multer.File>;
-  
+
 
   @IsOptional()
   @Transform(({ value }) => value === 'true')
@@ -67,9 +67,9 @@ export class CreateProductDto {
   @IsNumber()
   unitId: number;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  creatorId: string;
+  creatorId: number;
 
   createdBy: string;
 
@@ -77,5 +77,5 @@ export class CreateProductDto {
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {
-  productId: string;
+  productId: number;
 }

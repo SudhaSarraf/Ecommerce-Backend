@@ -31,7 +31,7 @@ export class AuthService {
     return request.user;
   }
 
-  async logout(userId: string) {
+  async logout(userId: number) {
     return await this.userService.logout(userId);
   }
 
@@ -40,7 +40,7 @@ export class AuthService {
    * @param userId
    * @param refreshToken
    */
-  async updateHashedToken(userId: string, refreshToken: string) {
+  async updateHashedToken(userId: number, refreshToken: string) {
     const hash = await this.hashData(refreshToken);
     await this.userService.updateHashedRt(userId, hash);
   }
@@ -154,7 +154,7 @@ export class AuthService {
    * @param roles
    *
    */
-  async getTokens(userId: string, email: string, roles: string[]) {
+  async getTokens(userId: number, email: string, roles: string[]) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {

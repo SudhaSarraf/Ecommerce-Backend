@@ -45,7 +45,7 @@ export class ProductController {
   // @Roles('admin', 'author')
   @UseInterceptors(FilesInterceptor('images'))
   @Patch('update/:id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto, @UploadedFiles() images: Array<Express.Multer.File>) {
+  update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto, @UploadedFiles() images: Array<Express.Multer.File>) {
     return this.productService.update({
       ...updateProductDto,
       productId: id,
@@ -54,7 +54,7 @@ export class ProductController {
   }
 
   @Delete('delete/:id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.productService.remove(id);
   }
 }

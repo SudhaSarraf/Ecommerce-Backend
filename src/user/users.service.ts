@@ -46,7 +46,7 @@ export class UserService {
     return users;
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     return await this.entityManager.findOne(UserEntity, {
       where: {
         userId: id
@@ -68,7 +68,7 @@ export class UserService {
     });
   }
 
-  async update(id: string, userData: UpdateUserDto) {
+  async update(id: number, userData: UpdateUserDto) {
     let imageName: string = '';
     // fetch existing user, so that we can get image and overwrite it
     const foundUser = await this.findOne(id);
@@ -98,7 +98,7 @@ export class UserService {
     else throw new InternalServerErrorException('Error while updating user.');
   }
 
-  async updatePassword(id: string, userData: UpdatePasswordDto) {
+  async updatePassword(id: number, userData: UpdatePasswordDto) {
     try {
       const foundUser = await this.entityManager.find(UserEntity, {
         where: {
@@ -139,7 +139,7 @@ export class UserService {
     }
   }
 
-  async updateHashedRt(id: string, rt: string) {
+  async updateHashedRt(id: number, rt: string) {
     try {
       const user = await this.findUserById(id);
       if (!user) throw new HttpException('User does not exist', 400);
@@ -152,11 +152,11 @@ export class UserService {
     }
   }
 
-  async findUserId(userId: string) {
+  async findUserId(userId: number) {
     return await this.entityManager.countBy(UserEntity, { userId: userId });
   }
 
-  async findUserById(userId: string) {
+  async findUserById(userId: number) {
     return await this.entityManager.findOne(UserEntity, {
       where: { userId: userId },
       relations: ['roles'],
@@ -180,11 +180,11 @@ export class UserService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     return await this.entityManager.softRemove(UserEntity, { userId: id });
   }
 
-  async logout(userId: string) {
+  async logout(userId: number) {
     const user = await this.findUserById(userId);
     user.hashedRt = null;
     return await this.entityManager.save(user);
