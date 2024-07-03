@@ -1,15 +1,18 @@
 
+import { BrandEntity } from 'src/brand/entities/brand.entity';
+import { CategoryEntity } from 'src/category/entities/category.entity';
 import { AbstractEntity } from 'src/common/abstract.entity';
 import { ProductEntity } from 'src/product/entities/product.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
+import { UnitEntity } from 'src/unit/entities/unit.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'companyinfo', schema: 'public' })
 export class CompanyInfoEntity extends AbstractEntity<CompanyInfoEntity> {
 
-    @PrimaryGeneratedColumn()
-    id: number
+    @PrimaryGeneratedColumn('uuid')
+    id: string
 
     @Column({ type: 'varchar', length: 500 })
     name: string;
@@ -74,9 +77,12 @@ export class CompanyInfoEntity extends AbstractEntity<CompanyInfoEntity> {
     @OneToMany(() => RoleEntity, role => role.companyId)
     roles: RoleEntity[];
 
-    // @OneToMany(() => Source, source => source.companyId)
-    // source: Source[];
+    @OneToMany(() => CategoryEntity, category => category.company)
+    category: CategoryEntity[];
 
-    // @OneToMany(() => AdvertisementEntity, ads => ads.company)
-    // ads: AdvertisementEntity[];
+    @OneToMany(() => BrandEntity, brand => brand.company)
+    brand: BrandEntity[];
+
+    @OneToMany(() => UnitEntity, unit => unit.company)
+    unit: UnitEntity[];
 }

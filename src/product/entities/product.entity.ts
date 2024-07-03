@@ -15,6 +15,7 @@ import {
 } from 'typeorm';
 import { BrandEntity } from 'src/brand/entities/brand.entity';
 import { UnitEntity } from 'src/unit/entities/unit.entity';
+import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
 
 export enum ProductSection {
     mens = 'men',
@@ -48,11 +49,11 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
     @Column('decimal', { precision: 10, scale: 2 })
     offerPrice: number;
 
-    @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false })
-    offerFrom: number;
+    @Column({ type: 'date', nullable: true })
+    offerFrom: Date;
 
-    @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false })
-    offerUpto: number;
+    @Column({ type: 'date', nullable: true })
+    offerUpto: Date;
 
     @Column({ nullable: true })
     manfDate: Date;
@@ -128,4 +129,7 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
     @ManyToOne(() => UnitEntity, unit => unit.products)
     @JoinColumn({name: 'unitId'})
     unit: UnitEntity;  
+
+    @ManyToOne(() => InventoryEntity, (inventory) => inventory.product, { nullable: false, eager: true, cascade: ['insert', 'update'] })
+    inventory: InventoryEntity;
 }

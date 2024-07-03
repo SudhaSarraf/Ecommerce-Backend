@@ -27,13 +27,11 @@ export class CreateProductDto {
   @IsNotEmpty()
   offerPrice: number;
 
-  @Type(() => Number)
-  @IsNumber()
-  offerFrom: number
+  @IsString()
+  offerFrom: Date;
 
-  @Type(() => Number)
-  @IsNumber()
-  offerUpto: number
+  @IsString()
+  offerUpto: Date;
 
   files?: Array<Express.Multer.File>;
   
@@ -61,8 +59,12 @@ export class CreateProductDto {
   @IsNumber()
   categoryId: number;
 
+  @Type(() => Number)
+  @IsNumber()
   brandId: number;
 
+  @Type(() => Number)
+  @IsNumber()
   unitId: number;
 
   @IsString()

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUnitDto } from './dto/create-unit.dto';
-import { UpdateUnitDto } from './dto/update-unit.dto';
+import { CreateUnitDto, UpdateUnitDto } from './dto/unit.dto';
 import { EntityManager } from 'typeorm';
 import { UnitEntity } from './entities/unit.entity';
 
@@ -21,20 +20,28 @@ export class UnitService {
   async findOne(id: number) {
     const result = await this.entityManager.findOne(UnitEntity, {
       where: {
-        id: id
+        id: id,
       },
     });
-    if(!result) throw new NotFoundException("No record found for requested unit");
+    if (!result)
+      throw new NotFoundException('No record found for requested unit');
     return result;
   }
 
   async update(id: number, updateunitDto: UpdateUnitDto) {
     const existingUnit = await this.findOne(id);
-    if(!existingUnit) throw new NotFoundException(`Brand ${existingUnit} does not exist in database`);
-    return await this.entityManager.update(UnitEntity, {id: id}, {...existingUnit, ...updateunitDto});
+    if (!existingUnit)
+      throw new NotFoundException(
+        `Brand ${existingUnit} does not exist in database`,
+      );
+    return await this.entityManager.update(
+      UnitEntity,
+      { id: id },
+      { ...existingUnit, ...updateunitDto },
+    );
   }
 
   async remove(id: number) {
-    return await this.entityManager.softDelete(UnitEntity, {id:id});
+    return await this.entityManager.softDelete(UnitEntity, { id: id });
   }
 }

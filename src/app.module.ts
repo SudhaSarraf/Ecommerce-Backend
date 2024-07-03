@@ -45,6 +45,7 @@ import { CategoryEntity } from './category/entities/category.entity';
 import { BrandEntity } from './brand/entities/brand.entity';
 import { UnitEntity } from './unit/entities/unit.entity';
 import { InventoryModule } from './inventory/inventory.module';
+import { InventoryEntity } from './inventory/entities/inventory.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -82,7 +83,8 @@ import { InventoryModule } from './inventory/inventory.module';
         CompanyInfoEntity,
         CategoryEntity,
         BrandEntity,
-        UnitEntity
+        UnitEntity,
+        InventoryEntity
         ,
       ],
     }),
