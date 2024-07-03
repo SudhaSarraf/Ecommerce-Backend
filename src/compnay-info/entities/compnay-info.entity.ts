@@ -2,6 +2,7 @@
 import { BrandEntity } from 'src/brand/entities/brand.entity';
 import { CategoryEntity } from 'src/category/entities/category.entity';
 import { AbstractEntity } from 'src/common/abstract.entity';
+import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
 import { ProductEntity } from 'src/product/entities/product.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { UnitEntity } from 'src/unit/entities/unit.entity';
@@ -85,4 +86,7 @@ export class CompanyInfoEntity extends AbstractEntity<CompanyInfoEntity> {
 
     @OneToMany(() => UnitEntity, unit => unit.company)
     unit: UnitEntity[];
+
+    @OneToMany(() => InventoryEntity, inventory => inventory.company)
+    inventory: InventoryEntity[];
 }

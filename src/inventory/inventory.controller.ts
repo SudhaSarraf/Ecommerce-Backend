@@ -7,19 +7,19 @@ import { UpdateInventoryDto } from './dto/update-inventory.dto';
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
-  @Post()
-  create(@Body() createInventoryDto: CreateInventoryDto) {
-    return this.inventoryService.create(createInventoryDto);
-  }
+  // @Post()
+  // create(@Body() createInventoryDto: CreateInventoryDto) {
+  //   return this.inventoryService.create(createInventoryDto);
+  // }
 
   @Get()
-  findAll() {
-    return this.inventoryService.findAll();
+  findAll(@Param('companyId') companyId: string) {
+    return this.inventoryService.findAll(companyId);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.inventoryService.findOne(+id);
+    return this.inventoryService.findOne(id);
   }
 
   @Patch(':id')
