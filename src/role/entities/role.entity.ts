@@ -1,11 +1,12 @@
 
 import { AbstractEntity } from "src/common/abstract.entity";
+import { AbstractWithNoId } from "src/common/abstractWithNoId";
 import { CompanyInfoEntity } from "src/compnay-info/entities/compnay-info.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({name: 'role'})
-export class RoleEntity extends AbstractEntity<RoleEntity>{
+export class RoleEntity extends AbstractWithNoId<RoleEntity>{
     @PrimaryColumn()
     name: string;
 

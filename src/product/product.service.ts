@@ -1,4 +1,10 @@
-import { ConflictException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { EntityManager, QueryFailedError } from 'typeorm';
@@ -6,14 +12,15 @@ import { FilesService } from 'src/files/files.service';
 import { UserService } from 'src/user/users.service';
 import { EntityNotFoundException } from 'src/common/errors/entityNotFoundException';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
+import { SuccessReturn } from 'src/common/success/successReturn';
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly entityManager: EntityManager,
     private readonly filesService: FilesService,
-    private readonly userService: UserService,
-  ) { }
+  ) {}
 
   async create(productDto: CreateProductDto) {
     try {
@@ -22,7 +29,9 @@ export class ProductService {
       return await this.entityManager.transaction(async (eManager) => {
         let imageNames: string = '';
         if (productDto.files) {
-          const namePromises = productDto.files.map(async (f: any) => await this.filesService.processFile(f));
+          const namePromises = productDto.files.map(
+            async (f: any) => await this.filesService.processFile(f),
+          );
           const names = await Promise.all(namePromises);
           imageNames = names.join();
         }
@@ -30,10 +39,11 @@ export class ProductService {
         // we need to append username, so we need this block of code.
         const usr = await eManager.findOne(UserEntity, {
           where: {
-            userId: productDto.creatorId
-          }
+            userId: productDto.creatorId,
+          },
         });
-        if (!usr) throw new HttpException('Author record not found in database.', 400);
+        if (!usr)
+          throw new HttpException('Author record not found in database.', 400);
 
         const newDate = new Date();
 
@@ -43,7 +53,7 @@ export class ProductService {
 
         const formattedDate = `${year}${month}${day}`;
         let prodName = productDto.productName.substring(0, 3).toUpperCase();
-        let barcode = (`${formattedDate}${prodName}${entryData.companyId}`)
+        let barcode = `${formattedDate}${prodName}${entryData.companyId}`;
 
         const product = { ...productDto, barcode, images: imageNames };
         const productEntity = new ProductEntity(product);
@@ -52,14 +62,29 @@ export class ProductService {
 
         console.log('product entity', productEntity);
 
-        const productDataResult = await eManager.insert(ProductEntity, productEntity);
-        if (productDataResult.identifiers[0].id === 0) throw new InternalServerErrorException();
+        const productDataResult = await eManager.insert(
+          ProductEntity,
+          productEntity,
+        );
+        if (productDataResult.identifiers[0].id === 0)
+          throw new InternalServerErrorException();
         console.log(productDataResult);
 
+        let inventoryData = await eManager.insert(InventoryEntity, {
+          quantity: 0.0,
+          status: true,
+          createdAt: new Date(),
+          productId: productDataResult.identifiers[0].id,
+          userId: usr.firstName + ' ' + usr.lastName,
+          companyId: entryData.companyId,
+        });
+
+        if (inventoryData.identifiers[0].id <= 0)
+          throw new InternalServerErrorException('Error creating Inverntory');
+        else return SuccessReturn('Inventory created Successfully');
+
         // const inventoryCreate = await eManager.insert
-
-
-      })
+      });
     } catch (error) {
       console.log('errror', error);
       throw error;
@@ -75,7 +100,7 @@ export class ProductService {
     try {
       const productData = await this.entityManager.find(ProductEntity, {
         where: {
-          status: true
+          status: true,
         },
         select: {
           id: true,
@@ -104,16 +129,16 @@ export class ProductService {
           createdBy: true,
           updatedBy: true,
           category: {
-            categoryName: true
+            categoryName: true,
           },
           brand: {
             brandName: true,
           },
           unit: {
             unitName: true,
-          }
+          },
         },
-        relations: ['category', 'brand', 'unit']
+        relations: ['category', 'brand', 'unit'],
       });
       if (productData.length > 0) return productData;
       else throw new EntityNotFoundException();
@@ -127,7 +152,7 @@ export class ProductService {
       const product = await this.entityManager.findOne(ProductEntity, {
         where: {
           id: id,
-          status: true
+          status: true,
         },
         select: {
           id: true,
@@ -156,22 +181,21 @@ export class ProductService {
           createdBy: true,
           updatedBy: true,
           category: {
-            categoryName: true
+            categoryName: true,
           },
           brand: {
             brandName: true,
           },
           unit: {
             unitName: true,
-          }
-        }
+          },
+        },
       });
       if (!product) {
         throw new NotFoundException('Product not found');
       }
       return product;
-    }
-    catch (error) {
+    } catch (error) {
       throw error;
     }
   }
@@ -179,28 +203,20 @@ export class ProductService {
   async update(productDto: UpdateProductDto) {
     // find user which is updating the record
     // const user = await this.userService.findOne(productDto.userId);
-
     // let foundProducts = await this.findOne(productDto.id);
-
     // // ideally, this error should never happen.
     // if (!foundProducts) throw new HttpException('News item not found in the database.', 400);
-
     // let updatedImages: string;
-
     // // process image updates
     // if (productDto.files) {
     //   const tmp = await this.filesService.processMultipleFiles(productDto.files, foundProducts.images);
     //   updatedImages = tmp.join(',');
     // }
-
     // const proId = foundProducts.id;
-
     // const updatedProduct = await this.entityManager.save({
-    //   ...productDto, id: proId, image: updatedImages, updatedBy: `${user.firstName} ${user.lastName}`, 
+    //   ...productDto, id: proId, image: updatedImages, updatedBy: `${user.firstName} ${user.lastName}`,
     // });
-
     // delete updatedProduct.files
-
     // if (!updatedProduct) throw new InternalServerErrorException('Failed to update news item');
     // return { updatedProduct };
   }

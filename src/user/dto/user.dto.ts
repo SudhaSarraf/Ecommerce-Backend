@@ -51,6 +51,11 @@ export class SignUpUserDto {
   @Type(() => String)
   @IsArray()
   roles: string[];
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  companyId: number;
 }
 
 export class UpdateUserDto extends PartialType(SignUpUserDto) {}

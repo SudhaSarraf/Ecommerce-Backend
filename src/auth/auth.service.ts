@@ -17,12 +17,14 @@ import { AuthDto } from './dto/auth.dto';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { SignUpUserDto } from 'src/user/dto/user.dto';
+import { CompnayInfoService } from 'src/compnay-info/compnay-info.service';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly roleService: RoleService,
     private readonly fileService: FilesService,
+    private readonly companyService: CompnayInfoService,
     private jwtService: jwt.JwtService,
   ) {}
 
@@ -60,14 +62,17 @@ export class AuthService {
     const user = await this.userService.findByEmail(dto.email);
     if (!user) throw new HttpException('User not found!', 400);
 
+    const company = await this.companyService.findOne(user.companyId);
+    if(!company.inService) throw new UnauthorizedException('Company is currently out of service.');
+
     const isPassValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isPassValid)
       throw new UnauthorizedException('Email or password incorrect');
     const roleNames = user.roles.map((r) => r.name);
-    const payload = { sub: user.userId, email: user.email, role: roleNames };
+    const payload = { sub: user.userId, email: user.email, role: roleNames, company: company.id};
 
-    const tokens = await this.getTokens(user.userId, user.email, roleNames);
+    const tokens = await this.getTokens(user.userId, user.email, roleNames, company.id);
     await this.updateHashedToken(user.userId, tokens.refreshToken);
     return { tokens, payload };
   }
@@ -90,8 +95,14 @@ export class AuthService {
   }
 
   async signUp(userData: SignUpUserDto) {
+    if(userData.companyId <= 0) {
+      throw new HttpException('Company id not valid', 400);
+    }
     const fileName = await this.fileService.processFile(userData.image);
 
+    const company = await this.companyService.findOne(userData.companyId);
+    if(!company.inService) throw new UnauthorizedException('Company is currently out of service.');
+    
     //  check if a user with incoming email already exists in db, if so return
     const exists = await this.userService.findByEmail(userData.email);
     if (exists)
@@ -136,13 +147,14 @@ export class AuthService {
       newUser.userId,
       newUser.email,
       userData.roles,
+      userData.companyId
     );
     await this.updateHashedToken(newUser.userId, tokens.refreshToken);
     return tokens;
   }
 
   async generateRt(user: any) {
-    const tokens = await this.getTokens(user.userId, user.email, user.role);
+    const tokens = await this.getTokens(user.userId, user.email, user.role, user.companyId);
     await this.updateHashedToken(user.userId, tokens.refreshToken);
     return tokens;
   }
@@ -154,13 +166,14 @@ export class AuthService {
    * @param roles
    *
    */
-  async getTokens(userId: number, email: string, roles: string[]) {
+  async getTokens(userId: number, email: string, roles: string[], companyId: number) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
           email: email,
           roles: roles,
+          companyId: companyId,
         },
         {
           secret: 'at-secret',
@@ -172,6 +185,8 @@ export class AuthService {
           sub: userId,
           email: email,
           roles: roles,
+          companyId: companyId
+          
         },
         {
           secret: 'rt-secret',

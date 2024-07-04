@@ -7,11 +7,9 @@ import { EntityNotFoundException } from 'src/common/errors/entityNotFoundExcepti
 
 @Injectable()
 export class InventoryService {
-  constructor(
-    private readonly entityManager: EntityManager,
-  ) {}
- 
-  async findAll(companyId: string) {
+  constructor(private readonly entityManager: EntityManager) {}
+
+  async findAll(companyId: number) {
     try {
       const inventoryData = await this.entityManager.find(InventoryEntity, {
         where: {
@@ -36,10 +34,10 @@ export class InventoryService {
         },
         relations: ['user', 'product', 'company'],
         order: {
-          id: 'DESC'
+          id: 'DESC',
         },
       });
-      if(inventoryData.length > 0) return inventoryData;
+      if (inventoryData.length > 0) return inventoryData;
       else throw new EntityNotFoundException();
     } catch (error) {
       throw error;
@@ -70,7 +68,7 @@ export class InventoryService {
           },
         },
         relations: ['user', 'product', 'company'],
-      })
+      });
     } catch (error) {
       throw error;
     }

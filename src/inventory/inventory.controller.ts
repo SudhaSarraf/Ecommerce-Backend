@@ -21,7 +21,7 @@ export class InventoryController {
   // }
 
   @Get()
-  findAll(@Param('companyId') companyId: string) {
+  findAll(@Param('companyId') companyId: number) {
     return this.inventoryService.findAll(companyId);
   }
 

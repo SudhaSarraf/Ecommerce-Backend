@@ -1,26 +1,78 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCompnayInfoDto } from './dto/create-compnay-info.dto';
-import { UpdateCompnayInfoDto } from './dto/update-compnay-info.dto';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { CreateCompnayInfoDto, UpdateCompnayInfoDto} from './dto/compnay-info.dto';
+import { EntityManager } from 'typeorm';
+import { CompanyInfoEntity } from './entities/compnay-info.entity';
+import { EntityNotFoundException } from 'src/common/errors/entityNotFoundException';
 
 @Injectable()
 export class CompnayInfoService {
-  create(createCompnayInfoDto: CreateCompnayInfoDto) {
-    return 'This action adds a new compnayInfo';
+  constructor(private readonly entityManager: EntityManager) {}
+
+  async create(
+    createCompnayInfoDto: CreateCompnayInfoDto,
+    imageFileName?: string,
+  ) {
+    try {
+      let company = new CompanyInfoEntity(createCompnayInfoDto);
+      company.logo = imageFileName;
+      company.status = true;
+      company.inService = true;
+      let companyData = await this.entityManager.save(company);
+      if (companyData) return companyData;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
-  findAll() {
-    return `This action returns all compnayInfo`;
+  async findAll() {
+    try {
+      let result = await this.entityManager.find(CompanyInfoEntity, {
+        order: {
+          id: 'DESC',
+        },
+      });
+      if (result.length > 0) return result;
+      else throw new EntityNotFoundException();
+    } catch (error) {
+      throw error;
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} compnayInfo`;
+  async findOne(id: number) {
+    try {
+      let result = await this.entityManager.findOne(CompanyInfoEntity, {
+        where: {
+          id: id,
+          status: true,
+        },
+      });
+      if (result) return result;
+      else throw new EntityNotFoundException('Cannot find company');
+    } catch (error) {
+      throw error;
+    }
   }
 
-  update(id: number, updateCompnayInfoDto: UpdateCompnayInfoDto) {
-    return `This action updates a #${id} compnayInfo`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} compnayInfo`;
+  async update(
+    id: number,
+    updateCompnayInfoDto: UpdateCompnayInfoDto,
+    image?: string,
+  ) {
+    console.log('Dto received', updateCompnayInfoDto);
+    const updateEntity = new CompanyInfoEntity(updateCompnayInfoDto);
+    console.log('update entity', updateEntity);
+    return await this.entityManager.update(CompanyInfoEntity, id, {
+      name: updateEntity.name,
+      logo: image,
+      regNo: updateEntity.regNo,
+      mobile: updateEntity.mobile,
+      email: updateEntity.email,
+      address: updateEntity.address,
+      city: updateEntity.city,
+      state: updateEntity.state,
+      country: updateEntity.country,
+      websiteLink: updateEntity.websiteLink,
+      estdDate: updateEntity.estdDate,
+    });
   }
 }
