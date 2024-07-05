@@ -11,6 +11,7 @@ import {
   DeleteDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { BrandEntity } from 'src/brand/entities/brand.entity';
 import { UnitEntity } from 'src/unit/entities/unit.entity';
@@ -134,6 +135,6 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
   @JoinColumn({ name: 'unitId' })
   unit: UnitEntity;
 
-  @ManyToOne(() => InventoryEntity, (inventory) => inventory.product)
+  @OneToOne(() => InventoryEntity, (inventory) => inventory.product)
   inventory: InventoryEntity;
 }

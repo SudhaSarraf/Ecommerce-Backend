@@ -9,6 +9,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -39,7 +40,7 @@ export class InventoryEntity extends AbstractEntity<InventoryEntity> {
   @Column({ nullable: false })
   companyId: number;
 
-  @OneToMany(() => ProductEntity, (product) => product.inventory)
+  @OneToOne(() => ProductEntity, (product) => product.inventory)
   @JoinColumn({ name: 'productId' })
   product?: ProductEntity[];
 

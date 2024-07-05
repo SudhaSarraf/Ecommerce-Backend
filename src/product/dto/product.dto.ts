@@ -57,15 +57,15 @@ export class CreateProductDto {
 
   @Type(() => Number)
   @IsNumber()
-  categoryId: number;
+  categoryId?: number;
 
   @Type(() => Number)
   @IsNumber()
-  brandId: number;
+  brandId?: number;
 
   @Type(() => Number)
   @IsNumber()
-  unitId: number;
+  unitId?: number;
 
   @IsNumber()
   @IsNotEmpty()
