@@ -77,5 +77,5 @@ export class CreateProductDto {
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {
-  productId: number;
+  id: number;
 }

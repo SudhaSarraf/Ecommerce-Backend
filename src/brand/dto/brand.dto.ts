@@ -1,10 +1,13 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsString } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateBrandDto {
+
+    @IsNotEmpty()
     @IsString()
     brandName: string;
 
+    @IsNotEmpty()
     @IsString()
     companyId: string;
 

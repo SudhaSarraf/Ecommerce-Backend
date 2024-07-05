@@ -1,10 +1,13 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsString } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateCategoryDto {
+
+    @IsNotEmpty()
     @IsString()
     categoryName: string;
 
+    @IsNotEmpty()
     @IsString()
     companyId: string;
 

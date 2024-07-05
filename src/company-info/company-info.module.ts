@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { CompnayInfoService } from './compnay-info.service';
-import { CompnayInfoController } from './compnay-info.controller';
+import { CompnayInfoService } from './company-info.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CompanyInfoEntity } from './entities/compnay-info.entity';
+import { CompanyInfoEntity } from './entities/company-info.entity';
 import { FilesModule } from 'src/files/files.module';
 import { FilesService } from 'src/files/files.service';
+import { CompanyInfoController } from './company-info.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CompanyInfoEntity]), FilesModule],
-  controllers: [CompnayInfoController],
+  controllers: [CompanyInfoController],
   providers: [CompnayInfoService, FilesService],
 })
 export class CompnayInfoModule {}

@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
@@ -10,7 +15,7 @@ import { RoleModule } from './role/role.module';
 import { dataSourceOtps } from './db/ormconfig';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import * as path from 'path'
+import * as path from 'path';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { OtpModule } from './otp/otp.module';
 import { UsersModule } from './user/users.module';
@@ -36,11 +41,11 @@ import { PurchaseEntryModule } from './purchase-entry/purchase-entry.module';
 import { IssuedProductFromStoreModule } from './issued-product-from-store/issued-product-from-store.module';
 import { ReturnPurchaseEntryModule } from './return-purchase-entry/return-purchase-entry.module';
 import { ReturnIssuedProductFromStoreModule } from './return-issued-product-from-store/return-issued-product-from-store.module';
-import { CompnayInfoModule } from './compnay-info/compnay-info.module';
+import { CompnayInfoModule } from './company-info/company-info.module';
 import { BrandModule } from './brand/brand.module';
 import { UnitModule } from './unit/unit.module';
 import { CategoryModule } from './category/category.module';
-import { CompanyInfoEntity } from './compnay-info/entities/compnay-info.entity';
+import { CompanyInfoEntity } from './company-info/entities/company-info.entity';
 import { CategoryEntity } from './category/entities/category.entity';
 import { BrandEntity } from './brand/entities/brand.entity';
 import { UnitEntity } from './unit/entities/unit.entity';
@@ -48,56 +53,77 @@ import { InventoryModule } from './inventory/inventory.module';
 import { InventoryEntity } from './inventory/entities/inventory.entity';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }),
-    UsersModule, NestjsFormDataModule,
-  // ServeStaticModule.forRoot({
-  //   rootPath: path.resolve(__dirname, 'files/static')
-  // }),
-  ServeStaticModule.forRootAsync({
-    useFactory: () => {
-      const uploadsPath = path.join(__dirname, 'files/static');
-      return [
-        {
-          rootPath: uploadsPath,
-          // serveRoot: '/static/',
-        },
-      ];
-    },
-  }),
-
-  TypeOrmModule.forRootAsync({
-    imports: [ConfigModule],
-    useFactory: (configService: ConfigService) => ({
-      ...dataSourceOtps,
-      // autoLoadEntities: true,
-      entities: [
-        ProductEntity,
-        OrderEntity,
-        OrderItemEntity,
-        CartEntity,
-        CartItemEntity,
-        RoleEntity,
-        UserEntity,
-        BillDetailEntity,
-        BillMasterEntity,
-        CompanyInfoEntity,
-        CategoryEntity,
-        BrandEntity,
-        UnitEntity,
-        InventoryEntity
-        ,
-      ],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    UsersModule,
+    NestjsFormDataModule,
+    // ServeStaticModule.forRoot({
+    //   rootPath: path.resolve(__dirname, 'files/static')
+    // }),
+    ServeStaticModule.forRootAsync({
+      useFactory: () => {
+        const uploadsPath = path.join(__dirname, 'files/static');
+        return [
+          {
+            rootPath: uploadsPath,
+            // serveRoot: '/static/',
+          },
+        ];
+      },
     }),
-    inject: [ConfigService], // Explicitly inject ConfigService
-  }),
-    PassportModule, UsersModule, AuthModule, LoggerModule, RoleModule, FilesModule, OtpModule, CartModule, ProductModule, OrderModule, OrderItemModule, CartItemModule, BillModule, PurchaseEntryModule, IssuedProductFromStoreModule, ReturnPurchaseEntryModule, ReturnIssuedProductFromStoreModule, CategoryModule, BrandModule, UnitModule, CompnayInfoModule, InventoryModule],
-  controllers: [AppController],
-  providers: [AppService, /*{ provide: APP_GUARD, useClass: AtGuard }*/],
 
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        ...dataSourceOtps,
+        // autoLoadEntities: true,
+        entities: [
+          ProductEntity,
+          OrderEntity,
+          OrderItemEntity,
+          CartEntity,
+          CartItemEntity,
+          RoleEntity,
+          UserEntity,
+          BillDetailEntity,
+          BillMasterEntity,
+          CompanyInfoEntity,
+          CategoryEntity,
+          BrandEntity,
+          UnitEntity,
+          InventoryEntity,
+        ],
+      }),
+      inject: [ConfigService], // Explicitly inject ConfigService
+    }),
+    PassportModule,
+    UsersModule,
+    AuthModule,
+    LoggerModule,
+    RoleModule,
+    FilesModule,
+    OtpModule,
+    CartModule,
+    ProductModule,
+    OrderModule,
+    OrderItemModule,
+    CartItemModule,
+    BillModule,
+    PurchaseEntryModule,
+    IssuedProductFromStoreModule,
+    ReturnPurchaseEntryModule,
+    ReturnIssuedProductFromStoreModule,
+    CategoryModule,
+    BrandModule,
+    UnitModule,
+    CompnayInfoModule,
+    InventoryModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService /*{ provide: APP_GUARD, useClass: AtGuard }*/],
 })
 
 // export class AppModule{}
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer

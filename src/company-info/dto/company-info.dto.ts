@@ -2,7 +2,7 @@ import { OmitType, PartialType } from "@nestjs/mapped-types";
 import { Transform } from "class-transformer";
 import { IsBoolean, IsOptional, IsString } from "class-validator";
 
-export class CreateCompnayInfoDto {
+export class CreateCompanyInfoDto {
     @IsString()
     name: string;
 
@@ -45,7 +45,7 @@ export class CreateCompnayInfoDto {
     about: string;
 }
 
-export class TempDto extends OmitType(CreateCompnayInfoDto, ['regNo', 'status'] as const) {}
+export class TempDto extends OmitType(CreateCompanyInfoDto, ['regNo', 'status'] as const) {}
 
-export class UpdateCompnayInfoDto extends PartialType(TempDto) {}
+export class UpdateCompanyInfoDto extends PartialType(TempDto) {}
 

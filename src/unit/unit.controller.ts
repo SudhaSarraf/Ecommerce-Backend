@@ -14,27 +14,27 @@ import { CreateUnitDto, UpdateUnitDto } from './dto/unit.dto';
 export class UnitController {
   constructor(private readonly unitService: UnitService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createUnitDto: CreateUnitDto) {
     return this.unitService.create(createUnitDto);
   }
 
-  @Get()
+  @Get('getAll')
   findAll() {
     return this.unitService.findAll();
   }
 
-  @Get(':id')
+  @Get('getById/:id')
   findOne(@Param('id') id: string) {
     return this.unitService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateUnitDto: UpdateUnitDto) {
     return this.unitService.update(+id, updateUnitDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.unitService.remove(+id);
   }

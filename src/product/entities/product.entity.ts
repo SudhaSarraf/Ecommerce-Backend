@@ -1,7 +1,6 @@
 import { CategoryEntity } from 'src/category/entities/category.entity';
 import { Public } from './../../common/public.decorator';
 import { AbstractEntity } from 'src/common/abstract.entity';
-import { CompanyInfoEntity } from 'src/compnay-info/entities/compnay-info.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
   Entity,
@@ -16,6 +15,7 @@ import {
 import { BrandEntity } from 'src/brand/entities/brand.entity';
 import { UnitEntity } from 'src/unit/entities/unit.entity';
 import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
+import { CompanyInfoEntity } from 'src/company-info/entities/company-info.entity';
 
 export enum ProductSection {
   mens = 'men',
@@ -101,35 +101,39 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
   @Column({ type: 'int' })
   creatorId: number;
 
-  @Column({ length: 50, default: "unknown" })
+  @Column({ length: 50, default: 'unknown' })
   createdBy: string;
 
   @Column({ length: 50, default: null, nullable: true })
   updatedBy: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.product, { nullable: false, eager: true, cascade: ['insert', 'update'] })
+  @ManyToOne(() => UserEntity, (user) => user.product, {
+    nullable: false,
+    eager: true,
+    cascade: ['insert', 'update'],
+  })
   @JoinColumn({
     referencedColumnName: 'userId',
     name: 'creatorId',
   })
   user: UserEntity;
 
-  @ManyToOne(() => CompanyInfoEntity, company => company.products)
+  @ManyToOne(() => CompanyInfoEntity, (company) => company.products)
   @JoinColumn({ name: 'companyId' })
   company: CompanyInfoEntity;
 
-  @ManyToOne(() => CategoryEntity, category => category.products)
+  @ManyToOne(() => CategoryEntity, (category) => category.products)
   @JoinColumn({ name: 'categoryId' })
   category: CategoryEntity;
 
-  @ManyToOne(() => BrandEntity, brand => brand.products)
+  @ManyToOne(() => BrandEntity, (brand) => brand.products)
   @JoinColumn({ name: 'brandId' })
   brand: BrandEntity;
 
-  @ManyToOne(() => UnitEntity, unit => unit.products)
+  @ManyToOne(() => UnitEntity, (unit) => unit.products)
   @JoinColumn({ name: 'unitId' })
   unit: UnitEntity;
 
-  @ManyToOne(() => InventoryEntity, (inventory) => inventory.product, { nullable: false, eager: true, cascade: ['insert', 'update'] })
+  @ManyToOne(() => InventoryEntity, (inventory) => inventory.product)
   inventory: InventoryEntity;
 }

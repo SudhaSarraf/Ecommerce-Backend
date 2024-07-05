@@ -12,8 +12,8 @@ import { UsersModule } from 'src/user/users.module';
 import { FilesModule } from 'src/files/files.module';
 import { AtStrategy } from './strategy/at.strategy';
 import { RtStrategy } from './strategy/rt.stategy';
-import { CompnayInfoModule } from 'src/compnay-info/compnay-info.module';
-import { CompnayInfoService } from 'src/compnay-info/compnay-info.service';
+import { CompnayInfoModule } from 'src/company-info/company-info.module';
+import { CompnayInfoService } from 'src/company-info/company-info.service';
 
 @Module({
   // use this with plain jwt without passport library
@@ -29,11 +29,18 @@ import { CompnayInfoService } from 'src/compnay-info/compnay-info.service';
     RoleModule,
     NestjsFormDataModule,
     FilesModule,
-    CompnayInfoModule
+    CompnayInfoModule,
   ],
 
   controllers: [AuthController],
-  providers: [AuthService, AtStrategy, RtStrategy, AtGuard, RtGuard, CompnayInfoService],
+  providers: [
+    AuthService,
+    AtStrategy,
+    RtStrategy,
+    AtGuard,
+    RtGuard,
+    CompnayInfoService,
+  ],
   exports: [AuthService, AtGuard, RtGuard],
 })
 export class AuthModule {}

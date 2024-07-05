@@ -11,53 +11,56 @@ import {
   UploadedFile,
   HttpException,
 } from '@nestjs/common';
-import { CompnayInfoService } from './compnay-info.service';
-import { CreateCompnayInfoDto, UpdateCompnayInfoDto} from './dto/compnay-info.dto';
+import {
+  CreateCompanyInfoDto,
+  UpdateCompanyInfoDto,
+} from './dto/company-info.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from 'src/files/files.service';
+import { CompnayInfoService } from './company-info.service';
 
-@Controller('compnay-info')
-export class CompnayInfoController {
+@Controller('company-info')
+export class CompanyInfoController {
   constructor(
-    private readonly compnayInfoService: CompnayInfoService,
+    private readonly companyInfoService: CompnayInfoService,
     private readonly fileService: FilesService,
   ) {}
 
   @UseInterceptors(FileInterceptor('logo'))
   @Post('create')
   async create(
-    @Body() createCompnayInfoDto: CreateCompnayInfoDto,
+    @Body() createCompanyInfoDto: CreateCompanyInfoDto,
     @UploadedFile() logo: Buffer,
   ) {
     if (logo) {
       const imageFileName = await this.fileService.processFile(logo);
-      return await this.compnayInfoService.create(
-        createCompnayInfoDto,
+      return await this.companyInfoService.create(
+        createCompanyInfoDto,
         imageFileName,
       );
     } else {
-      return await this.compnayInfoService.create(createCompnayInfoDto);
+      return await this.companyInfoService.create(createCompanyInfoDto);
     }
   }
 
   @Get()
   findAll() {
-    return this.compnayInfoService.findAll();
+    return this.companyInfoService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.compnayInfoService.findOne(+id);
+    return this.companyInfoService.findOne(+id);
   }
 
   @UseInterceptors(FileInterceptor('logo'))
   @Patch(':id')
   async update(
     @Param('id') id: number,
-    @Body() updateCompnayInfoDto: UpdateCompnayInfoDto,
+    @Body() updateCompanyInfoDto: UpdateCompanyInfoDto,
     @UploadedFile() logo: Express.Multer.File,
   ) {
-    const findCompany = await this.compnayInfoService.findOne(+id);
+    const findCompany = await this.companyInfoService.findOne(+id);
     if (!findCompany) throw new HttpException('record not found', 400);
 
     if (logo && findCompany.logo) {
@@ -66,21 +69,21 @@ export class CompnayInfoController {
         logo,
         findCompany.logo,
       );
-      return await this.compnayInfoService.update(
+      return await this.companyInfoService.update(
         id,
-        updateCompnayInfoDto,
+        updateCompanyInfoDto,
         imageFileName,
       );
     } else if (logo) {
       //user is providing a new image file for the first time
       const imageFileName = await this.fileService.processFile(logo);
-      return await this.compnayInfoService.update(
+      return await this.companyInfoService.update(
         id,
-        updateCompnayInfoDto,
+        updateCompanyInfoDto,
         imageFileName,
       );
     } else {
-      return await this.compnayInfoService.update(id, updateCompnayInfoDto);
+      return await this.companyInfoService.update(id, updateCompanyInfoDto);
     }
   }
 }

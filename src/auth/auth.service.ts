@@ -17,7 +17,7 @@ import { AuthDto } from './dto/auth.dto';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { SignUpUserDto } from 'src/user/dto/user.dto';
-import { CompnayInfoService } from 'src/compnay-info/compnay-info.service';
+import { CompnayInfoService } from 'src/company-info/company-info.service';
 @Injectable()
 export class AuthService {
   constructor(
@@ -63,16 +63,27 @@ export class AuthService {
     if (!user) throw new HttpException('User not found!', 400);
 
     const company = await this.companyService.findOne(user.companyId);
-    if(!company.inService) throw new UnauthorizedException('Company is currently out of service.');
+    if (!company.inService)
+      throw new UnauthorizedException('Company is currently out of service.');
 
     const isPassValid = await bcrypt.compare(dto.password, user.password);
 
     if (!isPassValid)
       throw new UnauthorizedException('Email or password incorrect');
     const roleNames = user.roles.map((r) => r.name);
-    const payload = { sub: user.userId, email: user.email, role: roleNames, company: company.id};
+    const payload = {
+      sub: user.userId,
+      email: user.email,
+      role: roleNames,
+      company: company.id,
+    };
 
-    const tokens = await this.getTokens(user.userId, user.email, roleNames, company.id);
+    const tokens = await this.getTokens(
+      user.userId,
+      user.email,
+      roleNames,
+      company.id,
+    );
     await this.updateHashedToken(user.userId, tokens.refreshToken);
     return { tokens, payload };
   }
@@ -95,14 +106,15 @@ export class AuthService {
   }
 
   async signUp(userData: SignUpUserDto) {
-    if(userData.companyId <= 0) {
+    if (userData.companyId <= 0) {
       throw new HttpException('Company id not valid', 400);
     }
     const fileName = await this.fileService.processFile(userData.image);
 
     const company = await this.companyService.findOne(userData.companyId);
-    if(!company.inService) throw new UnauthorizedException('Company is currently out of service.');
-    
+    if (!company.inService)
+      throw new UnauthorizedException('Company is currently out of service.');
+
     //  check if a user with incoming email already exists in db, if so return
     const exists = await this.userService.findByEmail(userData.email);
     if (exists)
@@ -111,21 +123,27 @@ export class AuthService {
     // we do this first, because user roles are related, if roles don't exist we can't fetch users,
     // and it will throw internal server error, but we want to throw a meaningful custom error.
     const foundRoles = await this.roleService.findAll();
-    if (!foundRoles) throw new HttpException(`${userData.roles} roles not found in the database`, 400);
+    if (!foundRoles)
+      throw new HttpException(
+        `${userData.roles} roles not found in the database`,
+        400,
+      );
 
- // Ensure userData.roles is always an array
-    const roles = Array.isArray(userData.roles) ? userData.roles : [userData.roles];
+    // Ensure userData.roles is always an array
+    const roles = Array.isArray(userData.roles)
+      ? userData.roles
+      : [userData.roles];
 
     // Match all dto roles from roles in database, dto has role names, but we have role objects,
     // so we need to perform this test. If the resulting array has undefined, we know that user
     // has sent a non-existent role name, so we can't process this request.
-    const mapped: RoleEntity[] | undefined = roles.map(name => {
-      return foundRoles.find(r => r.name === name);
+    const mapped: RoleEntity[] | undefined = roles.map((name) => {
+      return foundRoles.find((r) => r.name === name);
     });
 
     // Check for undefined values in the mapped array to ensure all roles are valid
     if (mapped.includes(undefined)) {
-      throw new Error("One or more roles are invalid");
+      throw new Error('One or more roles are invalid');
     }
     // at this point we know user has given valid roles, the role objects are
     // saved in mapped variable.
@@ -143,18 +161,24 @@ export class AuthService {
       image: fileName,
     };
     const newUser = await this.userService.create(userEntity);
+    newUser.active = true;
     const tokens = await this.getTokens(
       newUser.userId,
       newUser.email,
       userData.roles,
-      userData.companyId
+      userData.companyId,
     );
     await this.updateHashedToken(newUser.userId, tokens.refreshToken);
     return tokens;
   }
 
   async generateRt(user: any) {
-    const tokens = await this.getTokens(user.userId, user.email, user.role, user.companyId);
+    const tokens = await this.getTokens(
+      user.userId,
+      user.email,
+      user.role,
+      user.companyId,
+    );
     await this.updateHashedToken(user.userId, tokens.refreshToken);
     return tokens;
   }
@@ -166,7 +190,12 @@ export class AuthService {
    * @param roles
    *
    */
-  async getTokens(userId: number, email: string, roles: string[], companyId: number) {
+  async getTokens(
+    userId: number,
+    email: string,
+    roles: string[],
+    companyId: number,
+  ) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -185,8 +214,7 @@ export class AuthService {
           sub: userId,
           email: email,
           roles: roles,
-          companyId: companyId
-          
+          companyId: companyId,
         },
         {
           secret: 'rt-secret',

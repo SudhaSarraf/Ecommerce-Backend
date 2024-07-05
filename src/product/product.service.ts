@@ -75,7 +75,7 @@ export class ProductService {
           status: true,
           createdAt: new Date(),
           productId: productDataResult.identifiers[0].id,
-          userId: usr.firstName + ' ' + usr.lastName,
+          userId: productDto.creatorId,
           companyId: entryData.companyId,
         });
 
@@ -83,7 +83,6 @@ export class ProductService {
           throw new InternalServerErrorException('Error creating Inverntory');
         else return SuccessReturn('Inventory created Successfully');
 
-        // const inventoryCreate = await eManager.insert
       });
     } catch (error) {
       console.log('errror', error);
@@ -201,24 +200,39 @@ export class ProductService {
   }
 
   async update(productDto: UpdateProductDto) {
-    // find user which is updating the record
-    // const user = await this.userService.findOne(productDto.userId);
-    // let foundProducts = await this.findOne(productDto.id);
-    // // ideally, this error should never happen.
-    // if (!foundProducts) throw new HttpException('News item not found in the database.', 400);
-    // let updatedImages: string;
-    // // process image updates
-    // if (productDto.files) {
-    //   const tmp = await this.filesService.processMultipleFiles(productDto.files, foundProducts.images);
-    //   updatedImages = tmp.join(',');
-    // }
-    // const proId = foundProducts.id;
-    // const updatedProduct = await this.entityManager.save({
-    //   ...productDto, id: proId, image: updatedImages, updatedBy: `${user.firstName} ${user.lastName}`,
-    // });
-    // delete updatedProduct.files
-    // if (!updatedProduct) throw new InternalServerErrorException('Failed to update news item');
-    // return { updatedProduct };
+    try {
+          // find user which is updating the record
+          const user = await this.entityManager.findOne(UserEntity, {
+            where: {
+              userId: productDto.creatorId
+            }
+          });
+          let foundProducts = await this.entityManager.findOne(ProductEntity, {
+            where: {
+              id: productDto.id,
+            },
+          });
+          // ideally, this error should never happen.
+          if (!foundProducts) throw new HttpException('News item not found in the database.', 400);
+
+
+          let updatedImages: string;
+          // process image updates
+          if (productDto.files) {
+            const tmp = await this.filesService.processMultipleFiles(productDto.files, foundProducts.images);
+            updatedImages = tmp.join(',');
+          }
+          
+          // const proId = foundProducts.id;
+          // const updatedProduct = await this.entityManager.save({
+          //   ...productDto, id: proId, image: updatedImages, updatedBy: `${user.firstName} ${user.lastName}`,
+          // });
+          // delete updatedProduct.files
+          // if (!updatedProduct) throw new InternalServerErrorException('Failed to update news item');
+          // return { updatedProduct };
+    } catch (error) {
+      
+    }
   }
 
   async remove(id: number) {

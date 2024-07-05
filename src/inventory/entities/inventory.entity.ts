@@ -1,5 +1,5 @@
 import { AbstractEntity } from 'src/common/abstract.entity';
-import { CompanyInfoEntity } from 'src/compnay-info/entities/compnay-info.entity';
+import { CompanyInfoEntity } from 'src/company-info/entities/company-info.entity';
 import { ProductEntity } from 'src/product/entities/product.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
@@ -30,20 +30,20 @@ export class InventoryEntity extends AbstractEntity<InventoryEntity> {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
+  @Column({ nullable: false })
   productId: number;
 
   @Column()
-  userId: string;
+  userId: number;
 
-  @Column()
+  @Column({ nullable: false })
   companyId: number;
 
   @OneToMany(() => ProductEntity, (product) => product.inventory)
   @JoinColumn({ name: 'productId' })
   product?: ProductEntity[];
 
-  @OneToMany(() => UserEntity, (user) => user.inventory)
+  @ManyToOne(() => UserEntity, (user) => user.inventory)
   @JoinColumn({ name: 'userId' })
   user?: UserEntity[];
 

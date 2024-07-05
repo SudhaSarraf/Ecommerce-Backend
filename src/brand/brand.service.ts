@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBrandDto, UpdateBrandDto } from './dto/brand.dto';
 import { BrandEntity } from './entities/brand.entity';
 import { EntityManager } from 'typeorm';
+import { error } from 'console';
 
 @Injectable()
 export class BrandService {
@@ -9,6 +10,7 @@ export class BrandService {
 
   async create(createBrandDto: CreateBrandDto) {
     const brandEntity = new BrandEntity(createBrandDto);
+    brandEntity.status = true;
     const result = await this.entityManager.save(BrandEntity, brandEntity);
     return result;
   }
@@ -42,6 +44,12 @@ export class BrandService {
   }
 
   async remove(id: number) {
-    return await this.entityManager.softDelete(BrandEntity, { id: id });
+    const foundUnit = await this.entityManager.findOne(BrandEntity, { where: { id: id } });
+    if(!foundUnit) throw error;
+
+    const result = await this.entityManager.update(BrandEntity, id, {
+      status: false,
+    });
+    if( result ) return 'Brand removed successfully.';
   }
 }

@@ -1,12 +1,14 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { Type } from "class-transformer";
-import { IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateUnitDto {
 
+    @IsNotEmpty()
     @IsString()
     unitName: string;
 
+    @IsNotEmpty()
     @IsString()
     companyId: string;
 

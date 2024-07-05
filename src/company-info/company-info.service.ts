@@ -1,7 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreateCompnayInfoDto, UpdateCompnayInfoDto} from './dto/compnay-info.dto';
+import {
+  CreateCompanyInfoDto,
+  UpdateCompanyInfoDto,
+} from './dto/company-info.dto';
 import { EntityManager } from 'typeorm';
-import { CompanyInfoEntity } from './entities/compnay-info.entity';
+import { CompanyInfoEntity } from './entities/company-info.entity';
 import { EntityNotFoundException } from 'src/common/errors/entityNotFoundException';
 
 @Injectable()
@@ -9,7 +12,7 @@ export class CompnayInfoService {
   constructor(private readonly entityManager: EntityManager) {}
 
   async create(
-    createCompnayInfoDto: CreateCompnayInfoDto,
+    createCompnayInfoDto: CreateCompanyInfoDto,
     imageFileName?: string,
   ) {
     try {
@@ -55,7 +58,7 @@ export class CompnayInfoService {
 
   async update(
     id: number,
-    updateCompnayInfoDto: UpdateCompnayInfoDto,
+    updateCompnayInfoDto: UpdateCompanyInfoDto,
     image?: string,
   ) {
     console.log('Dto received', updateCompnayInfoDto);

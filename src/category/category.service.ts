@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto, UpdateCategoryDto} from './dto/category.dto';
 import { EntityManager } from 'typeorm';
 import { CategoryEntity } from './entities/category.entity';
+import { error } from 'console';
 
 @Injectable()
 export class CategoryService {
@@ -9,10 +10,8 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto) {
     const categoryEntity = new CategoryEntity(createCategoryDto);
-    const result = await this.entityManager.save(
-      CategoryEntity,
-      categoryEntity,
-    );
+    categoryEntity.status = true;
+    const result = await this.entityManager.save(categoryEntity );
     return result;
   }
 
@@ -37,14 +36,17 @@ export class CategoryService {
       throw new NotFoundException(
         `Brand ${existingCategory} does not exist in database`,
       );
-    return await this.entityManager.update(
-      CategoryEntity,
-      { id: id },
-      { ...existingCategory, ...updateCategoryDto },
+    return await this.entityManager.update(CategoryEntity,{ id: id },{ ...existingCategory, ...updateCategoryDto },
     );
   }
 
   async remove(id: number) {
-    return await this.entityManager.softDelete(CategoryEntity, { id: id });
+    const foundUnit = await this.entityManager.findOne(CategoryEntity, { where: { id: id } });
+    if(!foundUnit) throw error;
+
+    const result = await this.entityManager.update(CategoryEntity, id, {
+      status: false,
+    });
+    if( result ) return 'Category removed successfully.';
   }
 }
