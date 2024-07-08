@@ -58,7 +58,7 @@ export class CompnayInfoService {
 
   async update(
     id: number,
-    updateCompnayInfoDto: UpdateCompanyInfoDto,
+    updateCompnayInfoDto: UpdateCompanyInfoDto  ,
     image?: string,
   ) {
     console.log('Dto received', updateCompnayInfoDto);

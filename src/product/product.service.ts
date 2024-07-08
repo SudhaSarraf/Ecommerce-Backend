@@ -201,6 +201,20 @@ export class ProductService {
 
   async update(productDto: UpdateProductDto) {
     try {
+          // Check inventory quantity
+          const inventory = await this.entityManager.findOne(InventoryEntity, {
+            where: {
+              id: productDto.inventoryId,
+            },
+          });
+
+          if (!inventory) {
+            throw new HttpException('Inventory not found in the database.', 400);
+          }
+
+          if (inventory.quantity != 0) {
+            throw new HttpException('Inventory quantity must be exactly zero to proceed.', 400);
+          }
           // find user which is updating the record
           const user = await this.entityManager.findOne(UserEntity, {
             where: {
@@ -222,16 +236,30 @@ export class ProductService {
             const tmp = await this.filesService.processMultipleFiles(productDto.files, foundProducts.images);
             updatedImages = tmp.join(',');
           }
-          
-          // const proId = foundProducts.id;
-          // const updatedProduct = await this.entityManager.save({
-          //   ...productDto, id: proId, image: updatedImages, updatedBy: `${user.firstName} ${user.lastName}`,
-          // });
-          // delete updatedProduct.files
-          // if (!updatedProduct) throw new InternalServerErrorException('Failed to update news item');
-          // return { updatedProduct };
+
+          const proId = foundProducts.id;
+          const productEntity = new ProductEntity({...productDto, images: updatedImages});
+          console.log('updated entity', productEntity);
+          const updatedProduct = await this.entityManager.update(ProductEntity, proId, {
+            productName: productEntity.productName,
+            images: updatedImages,
+            purchasePrice: productEntity.purchasePrice,
+            sellingPrice: productEntity.sellingPrice,
+            offerPrice: productEntity.offerPrice,
+            offerFrom: productEntity.offerFrom,
+            offerUpto: productEntity.offerUpto,
+            manfDate: productEntity.manfDate,
+            expiryDate: productEntity.expiryDate,
+            validityMonth: productEntity.validityMonth,
+            productSection: productEntity.productSection,
+            categoryId: productEntity.categoryId,
+            unitId: productEntity.unitId,
+            brandId: productEntity.brandId
+          })
+          if (!updatedProduct) throw new InternalServerErrorException('Failed to update news item');
+          return { updatedProduct };
     } catch (error) {
-      
+      throw error
     }
   }
 

@@ -35,16 +35,10 @@ export class CreateProductDto {
 
   files?: Array<Express.Multer.File>;
 
-
   @IsOptional()
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
   status: boolean;
-
-  @IsNumber()
-  @Type(() => Number)
-  @IsNotEmpty()
-  stock: number;
 
   @IsArray()
   @IsEnum(ProductSection)
@@ -70,6 +64,10 @@ export class CreateProductDto {
   @IsNumber()
   @IsNotEmpty()
   creatorId: number;
+
+  @Type(() => Number)
+  @IsNumber()
+  inventoryId: number;
 
   createdBy: string;
 

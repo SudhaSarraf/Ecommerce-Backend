@@ -43,18 +43,18 @@ export class CompanyInfoController {
     }
   }
 
-  @Get()
+  @Get('getAll')
   findAll() {
     return this.companyInfoService.findAll();
   }
 
-  @Get(':id')
+  @Get('getById/:id')
   findOne(@Param('id') id: number) {
     return this.companyInfoService.findOne(+id);
   }
 
   @UseInterceptors(FileInterceptor('logo'))
-  @Patch(':id')
+  @Patch('update/:id')
   async update(
     @Param('id') id: number,
     @Body() updateCompanyInfoDto: UpdateCompanyInfoDto,
