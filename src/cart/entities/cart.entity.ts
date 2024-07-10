@@ -1,3 +1,4 @@
+import { IsString } from "class-validator";
 import { AbstractEntity } from "src/common/abstract.entity";
 import { CompanyInfoEntity } from "src/company-info/entities/company-info.entity";
 import { ProductEntity } from "src/product/entities/product.entity";
@@ -24,6 +25,9 @@ export class CartEntity extends AbstractEntity<CartEntity> {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @IsString()
+  updatedBy: string;
 
   @ManyToOne(() => CompanyInfoEntity, (company) => company.cart)
   @JoinColumn({ name: 'companyId' })

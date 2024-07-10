@@ -1,5 +1,4 @@
 import { CategoryEntity } from 'src/category/entities/category.entity';
-import { Public } from './../../common/public.decorator';
 import { AbstractEntity } from 'src/common/abstract.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import {
@@ -36,6 +35,9 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
 
   @Column()
   productName: string;
+
+  @Column({ nullable: true, type: 'text' })
+  productDescription: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   purchasePrice: number;

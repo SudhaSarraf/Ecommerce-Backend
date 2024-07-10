@@ -9,7 +9,6 @@ import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { EntityManager, QueryFailedError } from 'typeorm';
 import { FilesService } from 'src/files/files.service';
-import { UserService } from 'src/user/users.service';
 import { EntityNotFoundException } from 'src/common/errors/entityNotFoundException';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
@@ -24,7 +23,7 @@ export class ProductService {
 
   async create(productDto: CreateProductDto) {
     try {
-      let entryData = new ProductEntity(productDto);
+      const entryData = new ProductEntity(productDto);
 
       return await this.entityManager.transaction(async (eManager) => {
         let imageNames: string = '';
@@ -47,13 +46,13 @@ export class ProductService {
 
         const newDate = new Date();
 
-        let year = newDate.getFullYear().toString().slice(-2);
-        let month = (newDate.getMonth() + 1).toString().padStart(2, '0'); // Add 1 and pad with 0 if necessary
-        let day = newDate.getDate().toString().padStart(2, '0'); // Get the day of the month and pad with 0 if necessary
+        const year = newDate.getFullYear().toString().slice(-2);
+        const month = (newDate.getMonth() + 1).toString().padStart(2, '0'); // Add 1 and pad with 0 if necessary
+        const day = newDate.getDate().toString().padStart(2, '0'); // Get the day of the month and pad with 0 if necessary
 
         const formattedDate = `${year}${month}${day}`;
-        let prodName = productDto.productName.substring(0, 3).toUpperCase();
-        let barcode = `${formattedDate}${prodName}${entryData.companyId}`;
+        const prodName = productDto.productName.substring(0, 3).toUpperCase();
+        const barcode = `${formattedDate}${prodName}${entryData.companyId}`;
 
         const product = { ...productDto, barcode, images: imageNames };
         const productEntity = new ProductEntity(product);
@@ -70,7 +69,7 @@ export class ProductService {
           throw new InternalServerErrorException();
         console.log(productDataResult);
 
-        let inventoryData = await eManager.insert(InventoryEntity, {
+        const inventoryData = await eManager.insert(InventoryEntity, {
           quantity: 0.0,
           status: true,
           createdAt: new Date(),
@@ -106,6 +105,7 @@ export class ProductService {
           productCode: true,
           barcode: true,
           productName: true,
+          productDescription: true,
           purchasePrice: true,
           sellingPrice: true,
           offerPrice: true,
@@ -158,6 +158,7 @@ export class ProductService {
           productCode: true,
           barcode: true,
           productName: true,
+          productDescription: true,
           purchasePrice: true,
           sellingPrice: true,
           offerPrice: true,
@@ -221,7 +222,7 @@ export class ProductService {
               userId: productDto.creatorId
             }
           });
-          let foundProducts = await this.entityManager.findOne(ProductEntity, {
+          const foundProducts = await this.entityManager.findOne(ProductEntity, {
             where: {
               id: productDto.id,
             },
@@ -243,6 +244,7 @@ export class ProductService {
           const updatedProduct = await this.entityManager.update(ProductEntity, proId, {
             productName: productEntity.productName,
             images: updatedImages,
+            productDescription: productEntity.productDescription,
             purchasePrice: productEntity.purchasePrice,
             sellingPrice: productEntity.sellingPrice,
             offerPrice: productEntity.offerPrice,
@@ -254,7 +256,8 @@ export class ProductService {
             productSection: productEntity.productSection,
             categoryId: productEntity.categoryId,
             unitId: productEntity.unitId,
-            brandId: productEntity.brandId
+            brandId: productEntity.brandId,
+            updatedBy: user.firstName + " " + user.lastName
           })
           if (!updatedProduct) throw new InternalServerErrorException('Failed to update news item');
           return { updatedProduct };
