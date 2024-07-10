@@ -1,16 +1,39 @@
-import { CartItemEntity } from "src/cart-item/entities/cart-item.entity";
+import { AbstractEntity } from "src/common/abstract.entity";
+import { CompanyInfoEntity } from "src/company-info/entities/company-info.entity";
+import { ProductEntity } from "src/product/entities/product.entity";
 import { UserEntity } from "src/user/entities/user.entity";
-import { Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({ name: 'cart' })
-export class CartEntity {
-  @PrimaryGeneratedColumn('uuid')
-  cartId: string;
+export class CartEntity extends AbstractEntity<CartEntity> {
 
-  @OneToOne(() => UserEntity, (user) => user.cart)
-  @JoinColumn()
+  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false })
+  quantity: number;
+
+  @Column()
+  companyId: number;
+
+  @Column()
+  userId: number;
+
+  @Column()
+  productId: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ManyToOne(() => CompanyInfoEntity, (company) => company.cart)
+  @JoinColumn({ name: 'companyId' })
+  company: CompanyInfoEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.cart)
+  @JoinColumn({ name: 'userId'})
   user: UserEntity;
 
-  @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart, { eager: true })
-  cartItems: CartItemEntity[];
+  @ManyToOne(() => ProductEntity, (product) => product.cart)
+  @JoinColumn({ name: 'productId'})
+  product: ProductEntity;
 }

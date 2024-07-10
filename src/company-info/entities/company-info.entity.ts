@@ -1,5 +1,6 @@
 
 import { BrandEntity } from 'src/brand/entities/brand.entity';
+import { CartEntity } from 'src/cart/entities/cart.entity';
 import { CategoryEntity } from 'src/category/entities/category.entity';
 import { AbstractEntity } from 'src/common/abstract.entity';
 import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
@@ -89,4 +90,7 @@ export class CompanyInfoEntity extends AbstractEntity<CompanyInfoEntity> {
 
     @OneToMany(() => InventoryEntity, inventory => inventory.company)
     inventory: InventoryEntity[];
+
+    @OneToMany(() => CartEntity, cart => cart.company)
+    cart: CartEntity[];
 }

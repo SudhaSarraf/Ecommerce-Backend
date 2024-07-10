@@ -43,7 +43,7 @@ export class ProductService {
           },
         });
         if (!usr)
-          throw new HttpException('Author record not found in database.', 400);
+          throw new HttpException('User record not found in database.', 400);
 
         const newDate = new Date();
 
@@ -86,12 +86,12 @@ export class ProductService {
       });
     } catch (error) {
       console.log('errror', error);
-      throw error;
-      // if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
-      //   throw new ConflictException('Duplicate entry detected: ' + error.message);
-      // } else {
-      //   throw new InternalServerErrorException(error.message);
-      // }
+      // throw error;
+      if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
+        throw new ConflictException('Duplicate entry detected: ' + error.message);
+      } else {
+        throw new InternalServerErrorException(error.message);
+      }
     }
   }
 

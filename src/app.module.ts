@@ -26,14 +26,12 @@ import { CartModule } from './cart/cart.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
-import { CartItemModule } from './cart-item/cart-item.module';
 import { RoleEntity } from './role/entities/role.entity';
 import { UserEntity } from './user/entities/user.entity';
 import { ProductEntity } from './product/entities/product.entity';
 import { OrderEntity } from './order/entities/order.entity';
 import { OrderItemEntity } from './order-item/entities/order-item.entity';
 import { CartEntity } from './cart/entities/cart.entity';
-import { CartItemEntity } from './cart-item/entities/cart-item.entity';
 import { BillModule } from './bill/bill.module';
 import { BillDetailEntity } from './bill/entities/bill-detail.entity';
 import { BillMasterEntity } from './bill/entities/bill-master.entity';
@@ -82,7 +80,6 @@ import { InventoryEntity } from './inventory/entities/inventory.entity';
           OrderEntity,
           OrderItemEntity,
           CartEntity,
-          CartItemEntity,
           RoleEntity,
           UserEntity,
           BillDetailEntity,
@@ -107,7 +104,6 @@ import { InventoryEntity } from './inventory/entities/inventory.entity';
     ProductModule,
     OrderModule,
     OrderItemModule,
-    CartItemModule,
     BillModule,
     PurchaseEntryModule,
     IssuedProductFromStoreModule,

@@ -101,9 +101,6 @@ export class UserEntity extends AbstractWithNoId<UserEntity> {
   @OneToMany(() => OrderEntity, (order) => order.user)
   orders: OrderEntity[];
 
-  @OneToOne(() => CartEntity, (cart) => cart.user, { cascade: true })
-  cart: CartEntity;
-
   @OneToMany(() => ProductEntity, (product) => product.user)
   product: ProductEntity[];
 
@@ -118,6 +115,9 @@ export class UserEntity extends AbstractWithNoId<UserEntity> {
 
   @OneToMany(() => BillMasterEntity, (billEntity) => billEntity.user)
   bills: BillMasterEntity[];
+
+  @OneToMany(() => CartEntity, (cart) => cart.user)
+  cart: CartEntity[];
 
   @OneToMany(() => InventoryEntity, (inventory) => inventory.user)
   inventory: InventoryEntity;
