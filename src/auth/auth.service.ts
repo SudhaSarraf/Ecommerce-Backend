@@ -10,7 +10,6 @@ import {
 import * as bcrypt from 'bcrypt';
 import * as jwt from '@nestjs/jwt';
 import { RoleService } from 'src/role/role.service';
-import { v4 as uuidv4 } from 'uuid';
 import { FilesService } from '../files/files.service';
 import { UserService } from 'src/user/users.service';
 import { AuthDto } from './dto/auth.dto';

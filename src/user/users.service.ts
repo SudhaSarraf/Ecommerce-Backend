@@ -180,6 +180,8 @@ export class UserService {
     });
   }
 
+  
+
   async remove(id: number) {
     return await this.entityManager.softRemove(UserEntity, { userId: id });
   }
