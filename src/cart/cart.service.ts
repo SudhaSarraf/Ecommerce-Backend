@@ -1,6 +1,6 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCartDto, UpdateCartDto} from './dto/cart.dto';
-import { EntityManager } from 'typeorm';
+import { EntityManager, In } from 'typeorm';
 import { CartEntity } from './entities/cart.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { ProductEntity } from 'src/product/entities/product.entity';
@@ -191,7 +191,30 @@ export class CartService {
     }
   }
 
-
+  async checkQuantity(ids: any) {
+    try {
+      return await this.entityManager.transaction(async (eManager) => {
+        console.log('ids', ids.pids)
+        const a = ids.pids;
+          //get all active products in the inventory
+          const allActiveProduct = await eManager.find(InventoryEntity, {
+            where: {
+              id:In[a],
+              status:true,
+            },
+            select:{
+              id:true,
+              quantity:true
+            }
+          });
+          console.log('All active product', allActiveProduct);
+    
+        return allActiveProduct;
+      })
+    } catch (error) {
+      throw error;
+    }
+  }
 
   remove(id: number) {
     return `This action removes a #${id} cart`;

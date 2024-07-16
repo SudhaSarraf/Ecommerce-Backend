@@ -21,19 +21,31 @@ export class ProductService {
     private readonly filesService: FilesService,
   ) {}
 
+  private generateUniqueIdentifier(length: number): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters[randomIndex];
+    }
+    return result;
+  }
+
   async create(productDto: CreateProductDto) {
     try {
       const entryData = new ProductEntity(productDto);
   
       return await this.entityManager.transaction(async (eManager) => {
-        let imageNames: string = '';
-        if (productDto.files) {
-          const namePromises = productDto.files.map(
+        let imageNames: string = '', bannerName: string;
+        if (productDto.images) {
+          const namePromises = productDto.images.map(
             async (f: any) => await this.filesService.processFile(f),
           );
           const names = await Promise.all(namePromises);
           imageNames = names.join();
         }
+
+        if(entryData.banner) bannerName = await this.filesService.processFile(entryData.banner);
   
         // Find the user
         const usr = await eManager.findOne(UserEntity, {
@@ -50,12 +62,16 @@ export class ProductService {
         const day = newDate.getDate().toString().padStart(2, '0');
         const formattedDate = `${year}${month}${day}`;
         const prodName = productDto.productName.substring(0, 3).toUpperCase();
-        const barcode = `${formattedDate}${prodName}${entryData.companyId}`;
+
+        // Generate a unique identifier with 4 alphanumeric characters
+        const uniqueIdentifier = this.generateUniqueIdentifier(4);
+        const barcode = `${formattedDate}${prodName}${uniqueIdentifier}${entryData.companyId}`;
   
+        const pcIdentifier = this.generateUniqueIdentifier(6);
         // Check for product code or generate one
         let productCode = productDto.productCode;
         if (!productCode) {
-          productCode = `${formattedDate}${prodName}${entryData.companyId}`;
+          productCode = `${pcIdentifier}${prodName}${entryData.companyId}`;
           // Ensure productCode is unique
           const existingProduct = await eManager.findOne(ProductEntity, {
             where: { productCode },
@@ -65,8 +81,9 @@ export class ProductService {
           }
         }
   
-        const product = { ...productDto, barcode, images: imageNames, productCode };
+        const product = { ...productDto, barcode, images: imageNames, productCode , banner: bannerName };
         const productEntity = new ProductEntity(product);
+        productEntity.status = true;
   
         console.log('product entity', productEntity);
   
@@ -119,6 +136,7 @@ export class ProductService {
           expiryDate: true,
           validityMonth: true,
           images: true,
+          banner: true,
           productSection: true,
           companyId: true,
           categoryId: true,
@@ -171,6 +189,7 @@ export class ProductService {
           manfDate: true,
           expiryDate: true,
           validityMonth: true,
+          banner: true,
           images: true,
           productSection: true,
           companyId: true,
@@ -234,8 +253,8 @@ export class ProductService {
   
       let updatedImages: string;
       // Process image updates
-      if (productDto.files) {
-        const tmp = await this.filesService.processMultipleFiles(productDto.files, foundProduct.images);
+      if (productDto.images) {
+        const tmp = await this.filesService.processMultipleFiles(productDto.images, foundProduct.images);
         updatedImages = tmp.join(',');
       } else {
         updatedImages = foundProduct.images;

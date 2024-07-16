@@ -7,12 +7,18 @@ import {
   Patch,
   Param,
   Delete,
-  UseInterceptors,UploadedFiles, Req, UseGuards,
+  UseInterceptors,
+  UploadedFiles,
+  Req,
+  UseGuards,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { RoleGuard } from 'src/guards/role.guard';
+import { FormDataRequest } from 'nestjs-form-data';
 
 @Controller('product')
 export class ProductController {
@@ -21,9 +27,14 @@ export class ProductController {
   // @UseGuards(RoleGuard)
   // @Roles('admin', 'author')
   @Post('create')
-  @UseInterceptors(FilesInterceptor('images'))
-  create(@Body() createProductDto: CreateProductDto, /*@Req() req: any,*/ @UploadedFiles() images: any) {
-    return this.productService.create({...createProductDto, files: images, /*userId: req.user.userId*/ });
+  @HttpCode(HttpStatus.CREATED)
+  @FormDataRequest()
+  create(
+    @Body() createProductDto: CreateProductDto,
+  ) {
+    return this.productService.create({
+      ...createProductDto,
+    });
   }
 
   @Get('getAll')
@@ -43,13 +54,18 @@ export class ProductController {
 
   // @UseGuards(RoleGuard)
   // @Roles('admin', 'author')
-  @UseInterceptors(FilesInterceptor('images'))
+  @HttpCode(HttpStatus.CREATED)
+  @FormDataRequest()
   @Patch('update/:id')
-  update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto, @UploadedFiles() images: Array<Express.Multer.File>) {
+  update(
+    @Param('id') id: number,
+    @Body() updateProductDto: UpdateProductDto,
+    @UploadedFiles() images: Array<Express.Multer.File>,
+  ) {
     return this.productService.update({
       ...updateProductDto,
       id: id,
-      files: images
+      // files: images,
     });
   }
 

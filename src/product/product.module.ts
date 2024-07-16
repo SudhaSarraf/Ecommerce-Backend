@@ -9,7 +9,7 @@ import { FilesService } from 'src/files/files.service';
 import { UserService } from 'src/user/users.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductEntity]), FilesModule ],
+  imports: [TypeOrmModule.forFeature([ProductEntity]), FilesModule ,NestjsFormDataModule],
   controllers: [ProductController],
   providers: [ProductService, FilesService, UserService],
   exports: [ProductService]

@@ -6,6 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto, UpdateCartDto } from './dto/cart.dto';
@@ -29,7 +32,17 @@ export class CartController {
     return this.cartService.findOne(+id);
   }
 
-
+  @Get('getProductIds')
+  async checkQuantity(@Body() pids: any) {
+    console.log('pids', pids)
+    // if (!Array.isArray(ids) || ids.length === 0) {
+    //   throw new HttpException(
+    //     'No product IDs provided',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
+    return await this.cartService.checkQuantity(pids);
+  }
 
   @Patch('update/:id')
   update(@Param('id') id: number, @Body() updateCartDto: UpdateCartDto) {

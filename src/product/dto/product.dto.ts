@@ -1,4 +1,13 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsDecimal, IsArray, IsBoolean, IsNumber } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsDecimal,
+  IsArray,
+  IsBoolean,
+  IsNumber,
+} from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { ProductSection } from '../entities/product.entity';
@@ -18,7 +27,7 @@ export class CreateProductDto {
   purchasePrice: number;
 
   @IsString()
-  @IsOptional()  
+  @IsOptional()
   productDescription: string;
 
   @Type(() => Number)
@@ -44,9 +53,11 @@ export class CreateProductDto {
   expiryDate: Date;
 
   @IsString()
-  validityMonth: Date; 
+  validityMonth: Date;
 
-  files?: Array<Express.Multer.File>;
+  images?: any;
+
+  banner: any;
 
   @IsOptional()
   @Transform(({ value }) => value === 'true')

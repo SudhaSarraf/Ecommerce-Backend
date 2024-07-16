@@ -63,6 +63,9 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
   @Column({ nullable: true })
   validityMonth: Date;
 
+  @Column({ type: 'varchar', nullable: false })
+  banner: string;
+
   @Column()
   images: string;
 
@@ -79,10 +82,10 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
   @Column({ type: 'int', nullable: false })
   categoryId: number;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int', nullable: true })
   brandId: number;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int', nullable: true })
   unitId: number;
 
   @CreateDateColumn()
