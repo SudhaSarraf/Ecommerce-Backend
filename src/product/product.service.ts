@@ -225,20 +225,6 @@ export class ProductService {
 
   async update(productDto: UpdateProductDto) {
     try {
-      // Check inventory quantity
-      // const inventory = await this.entityManager.findOne(InventoryEntity, {
-      //   where: { id: productDto.inventoryId },
-      // });
-  
-      // if (!inventory) {
-      //   throw new HttpException('Inventory not found in the database.', 400);
-      // }
-  
-      // if (inventory.quantity !== 0) {
-      //   throw new HttpException('Inventory quantity must be exactly zero to proceed.', 400);
-      // }
-  
-      // Find user who is updating the record
       const user = await this.entityManager.findOne(UserEntity, {
         where: { userId: productDto.creatorId }
       });
@@ -251,13 +237,20 @@ export class ProductService {
       // Ideally, this error should never happen.
       if (!foundProduct) throw new HttpException('Product not found in the database.', 400);
   
-      let updatedImages: string;
+      let updatedImages: string= '', updatedBannerName: string;
       // Process image updates
       if (productDto.images) {
         const tmp = await this.filesService.processMultipleFiles(productDto.images, foundProduct.images);
         updatedImages = tmp.join(',');
       } else {
         updatedImages = foundProduct.images;
+      }
+
+      //process banner image
+      if(productDto.banner) {
+        updatedBannerName = await this.filesService.processFile(productDto.banner);
+      } else {
+        updatedBannerName = foundProduct.banner;
       }
   
       // Check for product code or retain the existing one
@@ -277,6 +270,7 @@ export class ProductService {
       const updatedProductData = {
         ...productDto,
         images: updatedImages,
+        banner: updatedBannerName,
         productCode, // Include the product code
         updatedBy: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
       };

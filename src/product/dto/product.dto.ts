@@ -37,8 +37,13 @@ export class CreateProductDto {
 
   @Type(() => Number)
   @IsDecimal()
-  @IsNotEmpty()
+  @IsOptional()
   offerPrice: number;
+
+  @Type(() => Number)
+  @IsDecimal()
+  @IsOptional()
+  discountPrice: number;
 
   @IsString()
   offerFrom: Date;

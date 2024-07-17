@@ -60,12 +60,10 @@ export class ProductController {
   update(
     @Param('id') id: number,
     @Body() updateProductDto: UpdateProductDto,
-    @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
     return this.productService.update({
       ...updateProductDto,
       id: id,
-      // files: images,
     });
   }
 

@@ -48,6 +48,9 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
   @Column('decimal', { precision: 10, scale: 2 })
   offerPrice: number;
 
+  @Column('decimal', { precision: 10, scale: 2 })
+  discountPrice: number;
+
   @Column({ type: 'date', nullable: true })
   offerFrom: Date;
 
