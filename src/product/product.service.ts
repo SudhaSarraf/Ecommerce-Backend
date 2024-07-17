@@ -7,12 +7,13 @@ import {
 } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductEntity } from './entities/product.entity';
-import { EntityManager, QueryFailedError } from 'typeorm';
+import { EntityManager, In, Not, QueryFailedError } from 'typeorm';
 import { FilesService } from 'src/files/files.service';
 import { EntityNotFoundException } from 'src/common/errors/entityNotFoundException';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
 import { SuccessReturn } from 'src/common/success/successReturn';
+import { CategoryEntity } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class ProductService {
@@ -34,9 +35,10 @@ export class ProductService {
   async create(productDto: CreateProductDto) {
     try {
       const entryData = new ProductEntity(productDto);
-  
+
       return await this.entityManager.transaction(async (eManager) => {
-        let imageNames: string = '', bannerName: string;
+        let imageNames: string = '',
+          bannerName: string;
         if (productDto.images) {
           const namePromises = productDto.images.map(
             async (f: any) => await this.filesService.processFile(f),
@@ -45,16 +47,18 @@ export class ProductService {
           imageNames = names.join();
         }
 
-        if(entryData.banner) bannerName = await this.filesService.processFile(entryData.banner);
-  
+        if (entryData.banner)
+          bannerName = await this.filesService.processFile(entryData.banner);
+
         // Find the user
         const usr = await eManager.findOne(UserEntity, {
           where: {
             userId: productDto.creatorId,
           },
         });
-        if (!usr) throw new HttpException('User record not found in database.', 400);
-  
+        if (!usr)
+          throw new HttpException('User record not found in database.', 400);
+
         // Prepare date for code generation
         const newDate = new Date();
         const year = newDate.getFullYear().toString().slice(-2);
@@ -66,7 +70,7 @@ export class ProductService {
         // Generate a unique identifier with 4 alphanumeric characters
         const uniqueIdentifier = this.generateUniqueIdentifier(4);
         const barcode = `${formattedDate}${prodName}${uniqueIdentifier}${entryData.companyId}`;
-  
+
         const pcIdentifier = this.generateUniqueIdentifier(6);
         // Check for product code or generate one
         let productCode = productDto.productCode;
@@ -77,20 +81,32 @@ export class ProductService {
             where: { productCode },
           });
           if (existingProduct) {
-            throw new ConflictException('Generated product code already exists. Please try again.');
+            throw new ConflictException(
+              'Generated product code already exists. Please try again.',
+            );
           }
         }
-  
-        const product = { ...productDto, barcode, images: imageNames, productCode , banner: bannerName };
+
+        const product = {
+          ...productDto,
+          barcode,
+          images: imageNames,
+          productCode,
+          banner: bannerName,
+        };
         const productEntity = new ProductEntity(product);
         productEntity.status = true;
-  
+
         console.log('product entity', productEntity);
-  
-        const productDataResult = await eManager.insert(ProductEntity, productEntity);
-        if (productDataResult.identifiers[0].id === 0) throw new InternalServerErrorException();
+
+        const productDataResult = await eManager.insert(
+          ProductEntity,
+          productEntity,
+        );
+        if (productDataResult.identifiers[0].id === 0)
+          throw new InternalServerErrorException();
         console.log(productDataResult);
-  
+
         const inventoryData = await eManager.insert(InventoryEntity, {
           quantity: 0.0,
           status: true,
@@ -99,197 +115,332 @@ export class ProductService {
           userId: productDto.creatorId,
           companyId: entryData.companyId,
         });
-  
+
         if (inventoryData.identifiers[0].id <= 0)
           throw new InternalServerErrorException('Error creating Inventory');
         else return SuccessReturn('Inventory created Successfully');
       });
     } catch (error) {
       console.log('error', error);
-      if (error instanceof QueryFailedError && error.message.includes('Duplicate entry')) {
-        throw new ConflictException('Duplicate entry detected: ' + error.message);
+      if (
+        error instanceof QueryFailedError &&
+        error.message.includes('Duplicate entry')
+      ) {
+        throw new ConflictException(
+          'Duplicate entry detected: ' + error.message,
+        );
       } else {
         throw new InternalServerErrorException(error.message);
       }
     }
   }
-  
 
   async findAll() {
-    try {
-      const productData = await this.entityManager.find(ProductEntity, {
-        where: {
-          status: true,
+    const productData = await this.entityManager.find(ProductEntity, {
+      where: {
+        status: true,
+      },
+      select: {
+        id: true,
+        productCode: true,
+        barcode: true,
+        productName: true,
+        productDescription: true,
+        purchasePrice: true,
+        sellingPrice: true,
+        offerPrice: true,
+        offerFrom: true,
+        offerUpto: true,
+        manfDate: true,
+        expiryDate: true,
+        validityMonth: true,
+        images: true,
+        banner: true,
+        productSection: true,
+        companyId: true,
+        categoryId: true,
+        brandId: true,
+        unitId: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        status: true,
+        creatorId: true,
+        createdBy: true,
+        updatedBy: true,
+        category: {
+          categoryName: true,
         },
-        select: {
-          id: true,
-          productCode: true,
-          barcode: true,
-          productName: true,
-          productDescription: true,
-          purchasePrice: true,
-          sellingPrice: true,
-          offerPrice: true,
-          offerFrom: true,
-          offerUpto: true,
-          manfDate: true,
-          expiryDate: true,
-          validityMonth: true,
-          images: true,
-          banner: true,
-          productSection: true,
-          companyId: true,
-          categoryId: true,
-          brandId: true,
-          unitId: true,
-          createdAt: true,
-          updatedAt: true,
-          deletedAt: true,
-          status: true,
-          creatorId: true,
-          createdBy: true,
-          updatedBy: true,
-          category: {
-            categoryName: true,
-          },
-          brand: {
-            brandName: true,
-          },
-          unit: {
-            unitName: true,
-          },
+        brand: {
+          brandName: true,
         },
-        relations: ['category', 'brand', 'unit'],
-      });
-      if (productData.length > 0) return productData;
-      else throw new EntityNotFoundException();
-    } catch (error) {
-      throw error;
-    }
+        unit: {
+          unitName: true,
+        },
+      },
+      relations: ['category', 'brand', 'unit'],
+    });
+    if (productData.length > 0) return productData;
+    else throw new EntityNotFoundException();
   }
 
   async findOne(id: number) {
-    try {
-      const product = await this.entityManager.findOne(ProductEntity, {
-        where: {
-          id: id,
-          status: true,
+    const product = await this.entityManager.findOne(ProductEntity, {
+      where: {
+        id: id,
+        status: true,
+      },
+      select: {
+        id: true,
+        productCode: true,
+        barcode: true,
+        productName: true,
+        productDescription: true,
+        purchasePrice: true,
+        sellingPrice: true,
+        offerPrice: true,
+        offerFrom: true,
+        offerUpto: true,
+        manfDate: true,
+        expiryDate: true,
+        validityMonth: true,
+        banner: true,
+        images: true,
+        productSection: true,
+        companyId: true,
+        categoryId: true,
+        brandId: true,
+        unitId: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        status: true,
+        creatorId: true,
+        createdBy: true,
+        updatedBy: true,
+        category: {
+          categoryName: true,
         },
-        select: {
-          id: true,
-          productCode: true,
-          barcode: true,
-          productName: true,
-          productDescription: true,
-          purchasePrice: true,
-          sellingPrice: true,
-          offerPrice: true,
-          offerFrom: true,
-          offerUpto: true,
-          manfDate: true,
-          expiryDate: true,
-          validityMonth: true,
-          banner: true,
-          images: true,
-          productSection: true,
-          companyId: true,
-          categoryId: true,
-          brandId: true,
-          unitId: true,
-          createdAt: true,
-          updatedAt: true,
-          deletedAt: true,
-          status: true,
-          creatorId: true,
-          createdBy: true,
-          updatedBy: true,
-          category: {
-            categoryName: true,
-          },
-          brand: {
-            brandName: true,
-          },
-          unit: {
-            unitName: true,
-          },
+        brand: {
+          brandName: true,
         },
-      });
-      if (!product) {
-        throw new NotFoundException('Product not found');
-      }
-      return product;
-    } catch (error) {
-      throw error;
+        unit: {
+          unitName: true,
+        },
+      },
+    });
+    if (!product) {
+      throw new NotFoundException('Product not found');
     }
+    return product;
+  }
+
+  async findByCategory(categoryId: number) {
+    const pid = await this.entityManager.find(ProductEntity, {
+      where: {
+        categoryId: categoryId,
+        status: true,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    console.log('pids', pid);
+
+    const pids = pid.map((item) => item.id);
+
+    const invIds = await this.entityManager.find(InventoryEntity, {
+      where: {
+        productId: In(pids),
+        quantity: Not(0),
+      },
+      select: {
+        productId: true,
+      },
+    });
+    console.log(invIds)
+
+    // const products = await this.entityManager.find(ProductEntity, {
+    //   where: {
+    //     id: In[invIds],
+    //     status: true,
+    //   },
+    //   select: {
+    //     id: true,
+    //     productCode: true,
+    //     barcode: true,
+    //     productName: true,
+    //     productDescription: true,
+    //     purchasePrice: true,
+    //     sellingPrice: true,
+    //     offerPrice: true,
+    //     offerFrom: true,
+    //     offerUpto: true,
+    //     manfDate: true,
+    //     expiryDate: true,
+    //     validityMonth: true,
+    //     banner: true,
+    //     images: true,
+    //     productSection: true,
+    //     companyId: true,
+    //     categoryId: true,
+    //     brandId: true,
+    //     unitId: true,
+    //     createdAt: true,
+    //     updatedAt: true,
+    //     deletedAt: true,
+    //     status: true,
+    //     creatorId: true,
+    //     createdBy: true,
+    //     updatedBy: true,
+    //     category: {
+    //       categoryName: true,
+    //     },
+    //     brand: {
+    //       brandName: true,
+    //     },
+    //     unit: {
+    //       unitName: true,
+    //     },
+    //   },
+    // });
+
+    // const category = await this.entityManager.findOne(CategoryEntity, {
+    //   where: {
+    //     id: categoryId,
+    //   },
+    //   select: {
+    //     categoryName: true,
+    //   },
+    // });
+    // const categoryName = category.categoryName;
+    // const product = await this.entityManager.findOne(ProductEntity, {
+    //   where: {
+    //     id: categoryId,
+    //     status: true,
+    //   },
+    //   select: {
+    //     id: true,
+    //     productCode: true,
+    //     barcode: true,
+    //     productName: true,
+    //     productDescription: true,
+    //     purchasePrice: true,
+    //     sellingPrice: true,
+    //     offerPrice: true,
+    //     offerFrom: true,
+    //     offerUpto: true,
+    //     manfDate: true,
+    //     expiryDate: true,
+    //     validityMonth: true,
+    //     banner: true,
+    //     images: true,
+    //     productSection: true,
+    //     companyId: true,
+    //     categoryId: true,
+    //     brandId: true,
+    //     unitId: true,
+    //     createdAt: true,
+    //     updatedAt: true,
+    //     deletedAt: true,
+    //     status: true,
+    //     creatorId: true,
+    //     createdBy: true,
+    //     updatedBy: true,
+    //     category: {
+    //       categoryName: true,
+    //     },
+    //     brand: {
+    //       brandName: true,
+    //     },
+    //     unit: {
+    //       unitName: true,
+    //     },
+    //   },
+    // });
+    if (!pids) {
+      throw new NotFoundException('Product not found');
+    }
+    return pids;
   }
 
   async update(productDto: UpdateProductDto) {
-    try {
-      const user = await this.entityManager.findOne(UserEntity, {
-        where: { userId: productDto.creatorId }
-      });
-  
-      // Find the existing product
-      const foundProduct = await this.entityManager.findOne(ProductEntity, {
-        where: { id: productDto.id },
-      });
-  
-      // Ideally, this error should never happen.
-      if (!foundProduct) throw new HttpException('Product not found in the database.', 400);
-  
-      let updatedImages: string= '', updatedBannerName: string;
-      // Process image updates
-      if (productDto.images) {
-        const tmp = await this.filesService.processMultipleFiles(productDto.images, foundProduct.images);
-        updatedImages = tmp.join(',');
-      } else {
-        updatedImages = foundProduct.images;
-      }
+    const user = await this.entityManager.findOne(UserEntity, {
+      where: { userId: productDto.creatorId },
+    });
 
-      //process banner image
-      if(productDto.banner) {
-        updatedBannerName = await this.filesService.processFile(productDto.banner);
-      } else {
-        updatedBannerName = foundProduct.banner;
-      }
-  
-      // Check for product code or retain the existing one
-      let productCode = productDto.productCode;
-      if (!productCode) {
-        productCode = foundProduct.productCode;
-      } else {
-        // Ensure the new product code is unique
-        const existingProduct = await this.entityManager.findOne(ProductEntity, {
-          where: { productCode },
-        });
-        if (existingProduct && existingProduct.id !== foundProduct.id) {
-          throw new ConflictException('Provided product code already exists. Please try again.');
-        }
-      }
-  
-      const updatedProductData = {
-        ...productDto,
-        images: updatedImages,
-        banner: updatedBannerName,
-        productCode, // Include the product code
-        updatedBy: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
-      };
-  
-      const updatedProduct = await this.entityManager.update(ProductEntity, foundProduct.id, updatedProductData);
-      
-      if (!updatedProduct) throw new InternalServerErrorException('Failed to update product');
-  
-      return { updatedProduct };
-    } catch (error) {
-      throw error;
+    // Find the existing product
+    const foundProduct = await this.entityManager.findOne(ProductEntity, {
+      where: { id: productDto.id },
+    });
+
+    // Ideally, this error should never happen.
+    if (!foundProduct)
+      throw new HttpException('Product not found in the database.', 400);
+
+    let updatedImages: string = '',
+      updatedBannerName: string;
+    // Process image updates
+    if (productDto.images) {
+      const tmp = await this.filesService.processMultipleFiles(
+        productDto.images,
+        foundProduct.images,
+      );
+      updatedImages = tmp.join(',');
+    } else {
+      updatedImages = foundProduct.images;
     }
+
+    //process banner image
+    if (productDto.banner) {
+      updatedBannerName = await this.filesService.processFile(
+        productDto.banner,
+      );
+    } else {
+      updatedBannerName = foundProduct.banner;
+    }
+
+    // Check for product code or retain the existing one
+    let productCode = productDto.productCode;
+    if (!productCode) {
+      productCode = foundProduct.productCode;
+    } else {
+      // Ensure the new product code is unique
+      const existingProduct = await this.entityManager.findOne(ProductEntity, {
+        where: { productCode },
+      });
+      if (existingProduct && existingProduct.id !== foundProduct.id) {
+        throw new ConflictException(
+          'Provided product code already exists. Please try again.',
+        );
+      }
+    }
+
+    const updatedProductData = {
+      ...productDto,
+      images: updatedImages,
+      banner: updatedBannerName,
+      productCode, // Include the product code
+      updatedBy: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+    };
+
+    const updatedProduct = await this.entityManager.update(
+      ProductEntity,
+      foundProduct.id,
+      updatedProductData,
+    );
+
+    if (!updatedProduct)
+      throw new InternalServerErrorException('Failed to update product');
+
+    return { updatedProduct };
   }
-  
 
   async remove(id: number) {
     // Check inventory quantity
     const inventory = await this.entityManager.findOne(InventoryEntity, {
-      where: { id:id },
+      where: { id: id },
     });
 
     if (!inventory) {
@@ -297,7 +448,10 @@ export class ProductService {
     }
 
     if (inventory.quantity !== 0) {
-      throw new HttpException('Inventory quantity must be exactly zero to proceed.', 400);
+      throw new HttpException(
+        'Inventory quantity must be exactly zero to proceed.',
+        400,
+      );
     }
 
     return this.entityManager.softDelete(ProductEntity, { id: id });

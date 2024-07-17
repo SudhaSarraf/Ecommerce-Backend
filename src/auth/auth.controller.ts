@@ -28,6 +28,7 @@ export class AuthController {
     return ({ accessToken: tokens.accessToken, user: { ...payload }, });
   }
 
+  @UseGuards(RtGuard)
   @HttpCode(HttpStatus.OK)
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response, @Req() req: Request) {

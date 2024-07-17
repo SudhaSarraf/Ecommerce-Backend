@@ -65,6 +65,9 @@ import { InventoryEntity } from './inventory/entities/inventory.entity';
           {
             rootPath: uploadsPath,
             // serveRoot: '/static/',
+            serveStaticOptions: {
+              index: false
+            }
           },
         ];
       },

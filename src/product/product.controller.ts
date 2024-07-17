@@ -47,10 +47,10 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  // @Get('/getByCategory/:category')
-  // async findByAdsCategory(@Param('category') category: Category) {
-  //   return await this.productService.findByCategory(category);
-  // }
+  @Get('/getByCategory/:categoryId')
+  async findByAdsCategory(@Param('categoryId') categoryId: number) {
+    return await this.productService.findByCategory(+categoryId);
+  }
 
   // @UseGuards(RoleGuard)
   // @Roles('admin', 'author')
