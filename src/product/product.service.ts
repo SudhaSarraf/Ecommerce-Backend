@@ -20,7 +20,7 @@ export class ProductService {
   constructor(
     private readonly entityManager: EntityManager,
     private readonly filesService: FilesService,
-  ) {}
+  ) { }
 
   private generateUniqueIdentifier(length: number): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -236,133 +236,93 @@ export class ProductService {
   }
 
   async findByCategory(categoryId: number) {
-    const pid = await this.entityManager.find(ProductEntity, {
-      where: {
-        categoryId: categoryId,
-        status: true,
-      },
-      select: {
-        id: true,
-      },
-    });
 
-    console.log('pids', pid);
+    try {
+      let result = await this.entityManager.transaction(async eManager => {
+        const pid = await eManager.find(ProductEntity, {
+          where: {
+            categoryId: categoryId,
+            status: true,
+          },
+          select: {
+            id: true,
+          },
+        });
 
-    const pids = pid.map((item) => item.id);
+        const pids: any = pid.map((item) => item.id);
 
-    const invIds = await this.entityManager.find(InventoryEntity, {
-      where: {
-        productId: In(pids),
-        quantity: Not(0),
-      },
-      select: {
-        productId: true,
-      },
-    });
-    console.log(invIds)
+        const invId = await eManager.find(InventoryEntity, {
+          where: {
+            productId: In(pids),
+          },
+          select: {
+            productId: true,
+            quantity: true
+          },
+        });
 
-    // const products = await this.entityManager.find(ProductEntity, {
-    //   where: {
-    //     id: In[invIds],
-    //     status: true,
-    //   },
-    //   select: {
-    //     id: true,
-    //     productCode: true,
-    //     barcode: true,
-    //     productName: true,
-    //     productDescription: true,
-    //     purchasePrice: true,
-    //     sellingPrice: true,
-    //     offerPrice: true,
-    //     offerFrom: true,
-    //     offerUpto: true,
-    //     manfDate: true,
-    //     expiryDate: true,
-    //     validityMonth: true,
-    //     banner: true,
-    //     images: true,
-    //     productSection: true,
-    //     companyId: true,
-    //     categoryId: true,
-    //     brandId: true,
-    //     unitId: true,
-    //     createdAt: true,
-    //     updatedAt: true,
-    //     deletedAt: true,
-    //     status: true,
-    //     creatorId: true,
-    //     createdBy: true,
-    //     updatedBy: true,
-    //     category: {
-    //       categoryName: true,
-    //     },
-    //     brand: {
-    //       brandName: true,
-    //     },
-    //     unit: {
-    //       unitName: true,
-    //     },
-    //   },
-    // });
+        const invIds: any = invId.filter(item => item.quantity > 0).map(item => item.productId);
 
-    // const category = await this.entityManager.findOne(CategoryEntity, {
-    //   where: {
-    //     id: categoryId,
-    //   },
-    //   select: {
-    //     categoryName: true,
-    //   },
-    // });
-    // const categoryName = category.categoryName;
-    // const product = await this.entityManager.findOne(ProductEntity, {
-    //   where: {
-    //     id: categoryId,
-    //     status: true,
-    //   },
-    //   select: {
-    //     id: true,
-    //     productCode: true,
-    //     barcode: true,
-    //     productName: true,
-    //     productDescription: true,
-    //     purchasePrice: true,
-    //     sellingPrice: true,
-    //     offerPrice: true,
-    //     offerFrom: true,
-    //     offerUpto: true,
-    //     manfDate: true,
-    //     expiryDate: true,
-    //     validityMonth: true,
-    //     banner: true,
-    //     images: true,
-    //     productSection: true,
-    //     companyId: true,
-    //     categoryId: true,
-    //     brandId: true,
-    //     unitId: true,
-    //     createdAt: true,
-    //     updatedAt: true,
-    //     deletedAt: true,
-    //     status: true,
-    //     creatorId: true,
-    //     createdBy: true,
-    //     updatedBy: true,
-    //     category: {
-    //       categoryName: true,
-    //     },
-    //     brand: {
-    //       brandName: true,
-    //     },
-    //     unit: {
-    //       unitName: true,
-    //     },
-    //   },
-    // });
-    if (!pids) {
-      throw new NotFoundException('Product not found');
+        const products = await eManager.find(ProductEntity, {
+          where: {
+            id: In(invIds),
+            status: true,
+          },
+          select: {
+            id: true,
+            productCode: true,
+            barcode: true,
+            productName: true,
+            productDescription: true,
+            purchasePrice: true,
+            sellingPrice: true,
+            offerPrice: true,
+            offerFrom: true,
+            offerUpto: true,
+            manfDate: true,
+            expiryDate: true,
+            validityMonth: true,
+            banner: true,
+            images: true,
+            productSection: true,
+            companyId: true,
+            categoryId: true,
+            brandId: true,
+            unitId: true,
+            createdAt: true,
+            updatedAt: true,
+            deletedAt: true,
+            status: true,
+            creatorId: true,
+            createdBy: true,
+            updatedBy: true,
+            category: {
+              categoryName: true,
+            },
+            brand: {
+              brandName: true,
+            },
+            unit: {
+              unitName: true,
+            },
+            user: {
+              firstName: true,
+              lastName: true,
+            }
+          },
+          relations: ['category', 'brand', 'unit', 'user']
+        });
+
+        if (products.length === invIds.length) return products;
+        else throw new NotFoundException('Product not found');
+      });
+      if (result) return result;
     }
-    return pids;
+    catch (error) {
+      throw error;
+    }
+
+
   }
 
   async update(productDto: UpdateProductDto) {

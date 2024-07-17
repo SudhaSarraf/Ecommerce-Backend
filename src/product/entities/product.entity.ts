@@ -112,15 +112,8 @@ export class ProductEntity extends AbstractEntity<ProductEntity> {
   @Column({ length: 50, default: null, nullable: true })
   updatedBy: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.product, {
-    nullable: false,
-    eager: true,
-    cascade: ['insert', 'update'],
-  })
-  @JoinColumn({
-    referencedColumnName: 'userId',
-    name: 'creatorId',
-  })
+  @ManyToOne(() => UserEntity, (user) => user.product)
+  @JoinColumn({ name: 'creatorId', })
   user: UserEntity;
 
   @ManyToOne(() => CompanyInfoEntity, (company) => company.products)
