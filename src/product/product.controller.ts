@@ -52,6 +52,11 @@ export class ProductController {
     return await this.productService.findByCategory(+categoryId);
   }
 
+  @Get('/getByBrand/:brandId')
+  async findByAdsBrand(@Param('brandId') brandId: number) {
+    return await this.productService.findByBrand(+brandId);
+  }
+
   // @UseGuards(RoleGuard)
   // @Roles('admin', 'author')
   @HttpCode(HttpStatus.CREATED)

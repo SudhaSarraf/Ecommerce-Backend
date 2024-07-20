@@ -7,13 +7,12 @@ import {
 } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { ProductEntity } from './entities/product.entity';
-import { EntityManager, In, Not, QueryFailedError } from 'typeorm';
+import { EntityManager, In, QueryFailedError } from 'typeorm';
 import { FilesService } from 'src/files/files.service';
 import { EntityNotFoundException } from 'src/common/errors/entityNotFoundException';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
 import { SuccessReturn } from 'src/common/success/successReturn';
-import { CategoryEntity } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class ProductService {
@@ -235,6 +234,7 @@ export class ProductService {
     return product;
   }
 
+
   async findByCategory(categoryId: number) {
 
     try {
@@ -242,6 +242,96 @@ export class ProductService {
         const pid = await eManager.find(ProductEntity, {
           where: {
             categoryId: categoryId,
+            status: true,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        const pids: any = pid.map((item) => item.id);
+
+        const invId = await eManager.find(InventoryEntity, {
+          where: {
+            productId: In(pids),
+          },
+          select: {
+            productId: true,
+            quantity: true
+          },
+        });
+
+        const invIds: any = invId.filter(item => item.quantity > 0).map(item => item.productId);
+
+        const products = await eManager.find(ProductEntity, {
+          where: {
+            id: In(invIds),
+            status: true,
+          },
+          select: {
+            id: true,
+            productCode: true,
+            barcode: true,
+            productName: true,
+            productDescription: true,
+            purchasePrice: true,
+            sellingPrice: true,
+            offerPrice: true,
+            offerFrom: true,
+            offerUpto: true,
+            manfDate: true,
+            expiryDate: true,
+            validityMonth: true,
+            banner: true,
+            images: true,
+            productSection: true,
+            companyId: true,
+            categoryId: true,
+            brandId: true,
+            unitId: true,
+            createdAt: true,
+            updatedAt: true,
+            deletedAt: true,
+            status: true,
+            creatorId: true,
+            createdBy: true,
+            updatedBy: true,
+            category: {
+              categoryName: true,
+            },
+            brand: {
+              brandName: true,
+            },
+            unit: {
+              unitName: true,
+            },
+            user: {
+              firstName: true,
+              lastName: true,
+            }
+          },
+          relations: ['category', 'brand', 'unit', 'user']
+        });
+
+        if (products.length === invIds.length) return products;
+        else throw new NotFoundException('Product not found');
+      });
+      if (result) return result;
+    }
+    catch (error) {
+      throw error;
+    }
+
+
+  }
+
+  async findByBrand(brandId: number) {
+
+    try {
+      let result = await this.entityManager.transaction(async eManager => {
+        const pid = await eManager.find(ProductEntity, {
+          where: {
+            brandId: brandId,
             status: true,
           },
           select: {
