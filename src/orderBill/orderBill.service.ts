@@ -1,8 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { CreateBillDto, UpdateBillDto } from './dto/bill.dto';
-import { BillMasterEntity, OrderStatus } from './entities/bill-master.entity';
-import { BillDetailEntity } from './entities/bill-detail.entity';
+import {
+  BillMasterEntity,
+  OrderStatus,
+} from './entities/orderBill-master.entity';
+import { BillDetailEntity } from './entities/orderBill-detail.entity';
 import { race } from 'rxjs';
 import { EntityNotFoundException } from 'src/common/errors/entityNotFoundException';
 
@@ -17,19 +20,27 @@ export class BillService {
       return await this.entityManager.transaction(async (eManager) => {
         // Fetch latest bill number
         const latestBillData = await eManager.find(BillMasterEntity, {
-          where: { 
-            status: true 
+          where: {
+            status: true,
           },
           order: {
-             billNo: 'DESC' 
-            },
+            billNo: 'DESC',
+          },
         });
 
         let uptoBillNo = !latestBillData[0] ? 0 : latestBillData[0].billNo;
-        let latestBillNo = latestBillData.length > 0 ? latestBillData[0].billNo : (uptoBillNo ? uptoBillNo : 0)
+        let latestBillNo =
+          latestBillData.length > 0
+            ? latestBillData[0].billNo
+            : uptoBillNo
+              ? uptoBillNo
+              : 0;
         let newBillNo = latestBillNo + 1;
 
-        if (!newBillNo || newBillNo === 0) throw new InternalServerErrorException('Technical error at bill generation. Contact support.');
+        if (!newBillNo || newBillNo === 0)
+          throw new InternalServerErrorException(
+            'Technical error at bill generation. Contact support.',
+          );
 
         const newDate = new Date();
 
@@ -38,11 +49,11 @@ export class BillService {
         let day = newDate.getDate().toString().padStart(2, '0'); // Get the day of the month and pad with 0 if necessary
 
         const formattedDate = `${year}${month}${day}`;
-        let barcode = (`${formattedDate}${entryData.userId}${newBillNo}`)
+        let barcode = `${formattedDate}${entryData.userId}${newBillNo}`;
 
         const savedMasterData = await eManager.insert(BillMasterEntity, {
           billNo: newBillNo,
-          voucherNo: ("Bill:- 0" + newBillNo).toString(),
+          voucherNo: ('Bill:- 0' + newBillNo).toString(),
           // date: entryData.date,
           userId: entryData.userId,
           subTotal: entryData.subTotal,
@@ -58,24 +69,24 @@ export class BillService {
           paymentType: entryData.paymentType,
           paymentStatus: entryData.paymentStatus,
           status: true,
-          orderStatus: OrderStatus.inProcess,
+          orderStatus: OrderStatus.pending,
           file: entryData.file ? entryData.file : 'N/A',
           fiscalYear: entryData.fiscalYear,
           createdDate: new Date(),
-          barCode: barcode
+          barCode: barcode,
         });
 
         const masterId = savedMasterData.identifiers[0].id;
 
         const masterData = await eManager.findOne(BillMasterEntity, {
           where: {
-            id: masterId
+            id: masterId,
           },
           select: {
             id: true,
             billNo: true,
             voucherNo: true,
-          }
+          },
         });
 
         let billDetailsArray: {}[] = [];
@@ -90,17 +101,27 @@ export class BillService {
             rate: createBillDto.billItemsDetails[i].rate,
             total: createBillDto.billItemsDetails[i].total,
             fiscalYear: entryData.fiscalYear,
-            createdDate: new Date()
+            createdDate: new Date(),
           });
         }
         console.log('masterData', masterData);
 
-        const detailsResult = await eManager.insert(BillDetailEntity, billDetailsArray);
-        if (detailsResult.identifiers[0].id < 0) throw new InternalServerErrorException('Failed product details creation.');
+        const detailsResult = await eManager.insert(
+          BillDetailEntity,
+          billDetailsArray,
+        );
+        if (detailsResult.identifiers[0].id < 0)
+          throw new InternalServerErrorException(
+            'Failed product details creation.',
+          );
         //#end region
 
-        if (detailsResult.generatedMaps.length) return { message: 'Test bill created for client.' }
-        else throw new InternalServerErrorException("Failed to save bill/details!!");
+        if (detailsResult.generatedMaps.length)
+          return { message: 'Test bill created for client.' };
+        else
+          throw new InternalServerErrorException(
+            'Failed to save bill/details!!',
+          );
       });
     } catch (error) {
       console.error(error);
@@ -112,7 +133,7 @@ export class BillService {
     try {
       const result = await this.entityManager.find(BillMasterEntity, {
         where: {
-          status: true
+          status: true,
         },
         select: {
           billNo: true,
@@ -144,41 +165,40 @@ export class BillService {
             lastName: true,
           },
           billDetails: {
-            id:true,
-            billId:true,
-            billNo:true,
-            voucherNo:true,
-            orderId:true,
-            quantity:true,
-            rate:true,
-            total:true,
-            status:true,
-            createdDate:true,
-            updatedDate:true,
-            updatedTimes:true,
-            fiscalYear:true,
-          }
+            id: true,
+            billId: true,
+            billNo: true,
+            voucherNo: true,
+            // orderId:true,
+            quantity: true,
+            rate: true,
+            total: true,
+            status: true,
+            createdDate: true,
+            updatedDate: true,
+            updatedTimes: true,
+            fiscalYear: true,
+          },
         },
-        relations: ['user', 'billDetails']
+        relations: ['user', 'billDetails'],
       });
       if (result.length > 0) return result;
       else throw new EntityNotFoundException();
-    }
-    catch (error) {
+    } catch (error) {
       throw error;
     }
   }
 
-  async findAllDetails( masterId: number) {
+  async findAllDetails(masterId: number) {
     try {
       const result = await this.entityManager.find(BillDetailEntity, {
         where: {
           billId: masterId,
-          status: true
+          status: true,
         },
         select: {
           id: true,
-          orderId:true,
+          // orderId:true,
           billId: true,
           quantity: true,
           rate: true,
@@ -191,16 +211,15 @@ export class BillService {
           isCancelled: true,
           billNo: true,
           voucherNo: true,
-          order: {
-            orderItems: true,
-          }
+          // orderM: {
+          //   orderItems: true,
+          // }
         },
-        relations: ['order','product','billMaster']
+        relations: ['order', 'product', 'billMaster'],
       });
       if (result.length > 0) return result;
       else throw new EntityNotFoundException();
-    }
-    catch (error) {
+    } catch (error) {
       throw error;
     }
   }
@@ -210,11 +229,11 @@ export class BillService {
       const result = await this.entityManager.findOne(BillDetailEntity, {
         where: {
           id: id,
-          status: true
+          status: true,
         },
         select: {
           id: true,
-          orderId:true,
+          // orderId:true,
           billId: true,
           quantity: true,
           rate: true,
@@ -225,20 +244,19 @@ export class BillService {
           updatedTimes: true,
           fiscalYear: true,
           isCancelled: true,
-          order: {
-            orderItems: true,
-          },
+          // order: {
+          //   orderItems: true,
+          // },
           billMaster: {
             billNo: true,
             voucherNo: true,
           },
         },
-        relations: ['product','order','billMaster']
+        relations: ['product', 'order', 'billMaster'],
       });
       if (result) return result;
       else throw new EntityNotFoundException();
-    }
-    catch (error) {
+    } catch (error) {
       throw error;
     }
   }
@@ -248,47 +266,68 @@ export class BillService {
       let entryData = new BillMasterEntity(updateBillDto);
       // let itemEntryData = new TestBillDetailsEntity(createTestBillItemDto);
       return await this.entityManager.transaction(async (eManager) => {
-
         let checkIsCancelled = await eManager.findOne(BillMasterEntity, {
           where: {
             id: id,
-            status: true
-          }
+            status: true,
+          },
         });
 
-        if (checkIsCancelled.isCancelled === true) throw new InternalServerErrorException('This bill is already cancelled');
+        if (checkIsCancelled.isCancelled === true)
+          throw new InternalServerErrorException(
+            'This bill is already cancelled',
+          );
 
-        let latestUpdatedTime = (await eManager.createQueryBuilder().select("updatedTimes").from(BillMasterEntity, "entity").where("entity.id = :id", { id: id }).getRawOne()).updatedTimes + 1;
+        let latestUpdatedTime =
+          (
+            await eManager
+              .createQueryBuilder()
+              .select('updatedTimes')
+              .from(BillMasterEntity, 'entity')
+              .where('entity.id = :id', { id: id })
+              .getRawOne()
+          ).updatedTimes + 1;
 
-        if (!latestUpdatedTime || latestUpdatedTime < 0) throw new InternalServerErrorException('Updated Times Generation Failed.');
+        if (!latestUpdatedTime || latestUpdatedTime < 0)
+          throw new InternalServerErrorException(
+            'Updated Times Generation Failed.',
+          );
 
-        let updateMasterData = await eManager.update(BillMasterEntity, { id: id }, {
-          subTotal: entryData.subTotal,
-          vat: entryData.vat,
-          vatAmt: entryData.vatAmt,
-          totalAmount: entryData.totalAmount,
-          discount: entryData.discount,
-          discountAmt: entryData.discountAmt,
-          grandTotal: entryData.grandTotal,
-          paid: entryData.paid,
-          due: entryData.due,
-          paymentType: entryData.paymentType,
-          paymentStatus: entryData.paymentStatus,
-          status: entryData.status,
-          orderStatus: entryData.orderStatus,
-          userId: entryData.userId,
-          file: entryData.file,
-          updatedTimes: latestUpdatedTime,
-          updatedDate: new Date()
-        });
+        let updateMasterData = await eManager.update(
+          BillMasterEntity,
+          { id: id },
+          {
+            subTotal: entryData.subTotal,
+            vat: entryData.vat,
+            vatAmt: entryData.vatAmt,
+            totalAmount: entryData.totalAmount,
+            discount: entryData.discount,
+            discountAmt: entryData.discountAmt,
+            grandTotal: entryData.grandTotal,
+            paid: entryData.paid,
+            due: entryData.due,
+            paymentType: entryData.paymentType,
+            paymentStatus: entryData.paymentStatus,
+            status: entryData.status,
+            orderStatus: entryData.orderStatus,
+            userId: entryData.userId,
+            file: entryData.file,
+            updatedTimes: latestUpdatedTime,
+            updatedDate: new Date(),
+          },
+        );
 
-        if (updateMasterData.affected === 0) throw new InternalServerErrorException('Error updating lab bill.');
+        if (updateMasterData.affected === 0)
+          throw new InternalServerErrorException('Error updating lab bill.');
 
         let deleteDetails = await eManager.delete(BillDetailEntity, {
-          billId: id
+          billId: id,
         });
 
-        if (deleteDetails.affected === 0) throw new InternalServerErrorException('Error in bill details alteration.');
+        if (deleteDetails.affected === 0)
+          throw new InternalServerErrorException(
+            'Error in bill details alteration.',
+          );
 
         let billDetailsArray: {}[] = [];
 
@@ -303,21 +342,30 @@ export class BillService {
             total: updateBillDto.billItemsDetails[i].total,
             updatedTimes: latestUpdatedTime,
             fiscalYear: entryData.fiscalYear,
-            updatedDate: new Date()
+            updatedDate: new Date(),
           });
         }
 
         //here new value is being inserted to details
-        const detailsResult = await eManager.insert(BillDetailEntity, billDetailsArray);
-        if (detailsResult.identifiers[0].id < 0) throw new InternalServerErrorException('Failed product details updation.');
+        const detailsResult = await eManager.insert(
+          BillDetailEntity,
+          billDetailsArray,
+        );
+        if (detailsResult.identifiers[0].id < 0)
+          throw new InternalServerErrorException(
+            'Failed product details updation.',
+          );
         //#end region
 
-        if (detailsResult.identifiers[0].id > 0) return { message: 'Test bill updated for client.' }
-        else throw new InternalServerErrorException("Failed to save bill/details!!");
+        if (detailsResult.identifiers[0].id > 0)
+          return { message: 'Test bill updated for client.' };
+        else
+          throw new InternalServerErrorException(
+            'Failed to save bill/details!!',
+          );
       });
-    }
-    catch (error) {
-      throw error
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -325,38 +373,54 @@ export class BillService {
     try {
       // let itemEntryData = new TestBillDetailsEntity(createTestBillItemDto);
       return await this.entityManager.transaction(async (eManager) => {
-
         let checkIsCancelled = await eManager.findOne(BillMasterEntity, {
           where: {
             id: id,
-            status: true
-          }
+            status: true,
+          },
         });
 
-        if (checkIsCancelled.isCancelled === true) throw new InternalServerErrorException('This bill is already cancelled');
+        if (checkIsCancelled.isCancelled === true)
+          throw new InternalServerErrorException(
+            'This bill is already cancelled',
+          );
 
-        let updateMasterData = await eManager.update(BillMasterEntity, { id: id }, {
-          isCancelled: true,
-          updatedDate: new Date()
-        });
+        let updateMasterData = await eManager.update(
+          BillMasterEntity,
+          { id: id },
+          {
+            isCancelled: true,
+            updatedDate: new Date(),
+          },
+        );
 
-        if (updateMasterData.affected === 0) throw new InternalServerErrorException('Error updating lab bill.');
+        if (updateMasterData.affected === 0)
+          throw new InternalServerErrorException('Error updating lab bill.');
 
         //here new value is being inserted to details
-        const detailsResult = await eManager.update(BillDetailEntity, { billId: id }, {
-          isCancelled: true,
-          updatedDate: new Date()
-        });
-        if (detailsResult.affected === 0) throw new InternalServerErrorException('Failed product details cancellation.');
+        const detailsResult = await eManager.update(
+          BillDetailEntity,
+          { billId: id },
+          {
+            isCancelled: true,
+            updatedDate: new Date(),
+          },
+        );
+        if (detailsResult.affected === 0)
+          throw new InternalServerErrorException(
+            'Failed product details cancellation.',
+          );
         //#end region
 
-        if (detailsResult.affected > 0) return { message: 'Test bill cancelled for client.' }
-        else throw new InternalServerErrorException("Failed to save bill/details!!");
+        if (detailsResult.affected > 0)
+          return { message: 'Test bill cancelled for client.' };
+        else
+          throw new InternalServerErrorException(
+            'Failed to save bill/details!!',
+          );
       });
-    }
-    catch (error) {
-      throw error
+    } catch (error) {
+      throw error;
     }
   }
-
 }

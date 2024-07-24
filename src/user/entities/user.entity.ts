@@ -1,4 +1,4 @@
-import { BillMasterEntity } from 'src/bill/entities/bill-master.entity';
+import { BillMasterEntity } from 'src/orderBill/entities/orderBill-master.entity';
 import { BrandEntity } from 'src/brand/entities/brand.entity';
 import { CartEntity } from 'src/cart/entities/cart.entity';
 import { CategoryEntity } from 'src/category/entities/category.entity';
@@ -6,7 +6,7 @@ import { AbstractEntity } from 'src/common/abstract.entity';
 import { AbstractWithNoId } from 'src/common/abstractWithNoId';
 import { CompanyInfoEntity } from 'src/company-info/entities/company-info.entity';
 import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
-import { OrderEntity } from 'src/order/entities/order.entity';
+import { OrderMain } from 'src/order-main/entities/order-main.entity';
 import { ProductEntity } from 'src/product/entities/product.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { UnitEntity } from 'src/unit/entities/unit.entity';
@@ -98,8 +98,8 @@ export class UserEntity extends AbstractWithNoId<UserEntity> {
   @JoinTable()
   roles: RoleEntity[];
 
-  @OneToMany(() => OrderEntity, (order) => order.user)
-  orders: OrderEntity[];
+  @OneToMany(() => OrderMain, (order) => order.user)
+  orders: OrderMain[];
 
   @OneToMany(() => ProductEntity, (product) => product.user)
   product: ProductEntity[];

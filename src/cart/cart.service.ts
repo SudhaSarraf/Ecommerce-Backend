@@ -217,6 +217,6 @@ export class CartService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} cart`;
+    return this.entityManager.softDelete(CartEntity, {id: id});
   }
 }

@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { BillService } from './bill.service';
+import { BillService } from './orderBill.service';
 import { CreateBillDto, UpdateBillDto } from './dto/bill.dto';
 
 @Controller('bill')
@@ -26,7 +26,7 @@ export class BillController {
 
   @Get('findAll/details/:billId')
   findAllDetails(@Param('billId') billId: number) {
-    return this.billService.findAllDetails( billId);
+    return this.billService.findAllDetails(billId);
   }
 
   @Get('findAll/master/:id')

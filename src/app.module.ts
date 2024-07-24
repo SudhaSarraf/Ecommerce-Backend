@@ -24,17 +24,13 @@ import { LoggerModule } from './logger.service.ts/logger.module';
 import { UsersMiddleware } from './user/users.middleware';
 import { CartModule } from './cart/cart.module';
 import { ProductModule } from './product/product.module';
-import { OrderModule } from './order/order.module';
-import { OrderItemModule } from './order-item/order-item.module';
 import { RoleEntity } from './role/entities/role.entity';
 import { UserEntity } from './user/entities/user.entity';
 import { ProductEntity } from './product/entities/product.entity';
-import { OrderEntity } from './order/entities/order.entity';
-import { OrderItemEntity } from './order-item/entities/order-item.entity';
 import { CartEntity } from './cart/entities/cart.entity';
-import { BillModule } from './bill/bill.module';
-import { BillDetailEntity } from './bill/entities/bill-detail.entity';
-import { BillMasterEntity } from './bill/entities/bill-master.entity';
+import { BillModule } from './orderBill/orderBill.module';
+import { BillDetailEntity } from './orderBill/entities/orderBill-detail.entity';
+import { BillMasterEntity } from './orderBill/entities/orderBill-master.entity';
 import { PurchaseEntryModule } from './purchase-entry/purchase-entry.module';
 import { IssuedProductFromStoreModule } from './issued-product-from-store/issued-product-from-store.module';
 import { ReturnPurchaseEntryModule } from './return-purchase-entry/return-purchase-entry.module';
@@ -49,6 +45,8 @@ import { BrandEntity } from './brand/entities/brand.entity';
 import { UnitEntity } from './unit/entities/unit.entity';
 import { InventoryModule } from './inventory/inventory.module';
 import { InventoryEntity } from './inventory/entities/inventory.entity';
+import { OrderMainModule } from './order-main/order-main.module';
+import { OrderMain } from './order-main/entities/order-main.entity';
 
 @Module({
   imports: [
@@ -66,8 +64,8 @@ import { InventoryEntity } from './inventory/entities/inventory.entity';
             rootPath: uploadsPath,
             // serveRoot: '/static/',
             serveStaticOptions: {
-              index: false
-            }
+              index: false,
+            },
           },
         ];
       },
@@ -80,8 +78,7 @@ import { InventoryEntity } from './inventory/entities/inventory.entity';
         // autoLoadEntities: true,
         entities: [
           ProductEntity,
-          OrderEntity,
-          OrderItemEntity,
+          OrderMain,
           CartEntity,
           RoleEntity,
           UserEntity,
@@ -105,8 +102,6 @@ import { InventoryEntity } from './inventory/entities/inventory.entity';
     OtpModule,
     CartModule,
     ProductModule,
-    OrderModule,
-    OrderItemModule,
     BillModule,
     PurchaseEntryModule,
     IssuedProductFromStoreModule,
@@ -117,6 +112,7 @@ import { InventoryEntity } from './inventory/entities/inventory.entity';
     UnitModule,
     CompnayInfoModule,
     InventoryModule,
+    OrderMainModule,
   ],
   controllers: [AppController],
   providers: [AppService /*{ provide: APP_GUARD, useClass: AtGuard }*/],

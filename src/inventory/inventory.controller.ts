@@ -20,12 +20,12 @@ export class InventoryController {
   //   return this.inventoryService.create(createInventoryDto);
   // }
 
-  @Get()
+  @Get('getAll/:companyId')
   findAll(@Param('companyId') companyId: number) {
     return this.inventoryService.findAll(companyId);
   }
 
-  @Get(':id')
+  @Get('getById/:id')
   findOne(@Param('id') id: string) {
     return this.inventoryService.findOne(+id);
   }

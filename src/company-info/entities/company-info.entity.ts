@@ -4,6 +4,7 @@ import { CartEntity } from 'src/cart/entities/cart.entity';
 import { CategoryEntity } from 'src/category/entities/category.entity';
 import { AbstractEntity } from 'src/common/abstract.entity';
 import { InventoryEntity } from 'src/inventory/entities/inventory.entity';
+import { OrderMain } from 'src/order-main/entities/order-main.entity';
 import { ProductEntity } from 'src/product/entities/product.entity';
 import { RoleEntity } from 'src/role/entities/role.entity';
 import { UnitEntity } from 'src/unit/entities/unit.entity';
@@ -93,4 +94,7 @@ export class CompanyInfoEntity extends AbstractEntity<CompanyInfoEntity> {
 
     @OneToMany(() => CartEntity, cart => cart.company)
     cart: CartEntity[];
+
+    @OneToMany(() => OrderMain, cart => cart.company)
+    orders: OrderMain[];
 }
